@@ -32,19 +32,19 @@ public class ClientController {
 
 
     @PostMapping()
-    public ClientDto save(@Valid @RequestBody ClientDto vehicle) {
-        return this.service.save(vehicle).dto();
+    public ClientDto save(@Valid @RequestBody ClientDto client) {
+        return this.service.save(client).dto();
     }
 
 
     @DeleteMapping("/{idClient}")
-    public void delete(@Valid @PathVariable("idClient") Long idClient) {
+    public void delete(@PathVariable Long idClient) {
         this.service.delete(idClient);
     }
 
 
     @PutMapping("/{idClient}")
-    public ClientDto update(@Valid @RequestBody ClientDto client ) {
+    public ClientDto update(@Valid @RequestBody ClientDto client) {
         return this.service.update(client).dto();
     }
 }

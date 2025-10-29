@@ -26,14 +26,12 @@ public class ClientServiceImpl implements ClientService {
                 .map(Client::dto)
                 .collect(Collectors.toList());
     }
-    
 
     @Override
     public Client byId(Long id) {
         return this.repository.findById(id)
                 .orElseThrow(() -> new AppException("Client not found", HttpStatus.NOT_FOUND));
     }
-
 
     @Override
     public Client save(ClientDto client) {
@@ -46,7 +44,6 @@ public class ClientServiceImpl implements ClientService {
                 .build());
     }
 
-
     @Override
     public void delete(Long idClient) {
         this.repository.deleteById(idClient);
@@ -58,9 +55,9 @@ public class ClientServiceImpl implements ClientService {
         Client model = this.repository.findById(client.getId())
                 .orElseThrow(() -> new AppException("client not found", HttpStatus.NOT_FOUND));
 
-        model.setAdresse(client.getAdresse());
         model.setNom(client.getNom());
         model.setEmail(client.getEmail());
+        model.setAdresse(client.getAdresse());
         model.setEntreprise(client.getEntreprise());
         model.setTelephone(client.getTelephone());
 
