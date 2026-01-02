@@ -4,6 +4,7 @@ import com.gp_dev.erp_lite.dtos.DevisDto;
 import com.gp_dev.erp_lite.services.DevisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -19,26 +20,31 @@ public class DevisController {
     private final DevisService service;
 
     @GetMapping()
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<DevisDto> getAll() {
         return service.all();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public DevisDto getById(@PathVariable Long id) {
         return service.byId(id).dto();
     }
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public DevisDto save(@Valid @RequestBody DevisDto dto) {
         return service.save(dto).dto();
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public DevisDto update(@PathVariable Long id, @Valid @RequestBody DevisDto dto) {
         return service.update(dto).dto();
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

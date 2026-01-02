@@ -2,6 +2,7 @@ package com.gp_dev.erp_lite.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,26 +27,31 @@ public class LigneDevisController {
     private final LigneDevisService service;
 
     @GetMapping()
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<LigneDevisDto> getAll() {
         return service.all();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public LigneDevisDto getById(@PathVariable Long id) {
         return service.byId(id).dto();
     }
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public LigneDevisDto save(@Valid @RequestBody LigneDevisDto dto) {
         return service.save(dto).dto();
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public LigneDevisDto update(@Valid @RequestBody LigneDevisDto dto) {
         return service.update(dto).dto();
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

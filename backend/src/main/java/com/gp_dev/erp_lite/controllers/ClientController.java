@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,30 +21,35 @@ public class ClientController {
     private final ClientService service;
 
     @GetMapping()
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<List<ClientDto>> all() {
         return ResponseEntity.ok(service.all());
     }
 
 
     @GetMapping("/{idClient}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<ClientDto> get(@PathVariable Long idClient) {
         return ResponseEntity.ok(this.service.byId(idClient).dto());
     }
 
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public ClientDto save(@Valid @RequestBody ClientDto client) {
         return this.service.save(client).dto();
     }
 
 
     @DeleteMapping("/{idClient}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long idClient) {
         this.service.delete(idClient);
     }
 
 
     @PutMapping("/{idClient}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ClientDto update(@Valid @RequestBody ClientDto client) {
         return this.service.update(client).dto();
     }
