@@ -1,15 +1,19 @@
 package com.gp_dev.erp_lite.controllers;
 
 import com.gp_dev.erp_lite.dtos.ClientDto;
+import com.gp_dev.erp_lite.dtos.CreateClientDto;
+import com.gp_dev.erp_lite.dtos.UpdateClientDto;
 import com.gp_dev.erp_lite.services.ClientService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -18,39 +22,49 @@ import java.util.List;
 public class ClientController {
 
     public static final String REQUEST_MAPPING_NAME = "/api/v1/clients";
-    private final ClientService service;
+    private final ClientService clientService;
 
-    @GetMapping()
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<List<ClientDto>> all() {
-        return ResponseEntity.ok(service.all());
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<Page<ClientDto>> getAll(
+            @PageableDefault(size = 20, sort = "id") Pageable pageable,
+            @RequestParam(required = false) String search) {
+        
+        Page<ClientDto> clients;
+        if (search != null && !search.trim().isEmpty()) {
+            clients = clientService.search(search.trim(), pageable);
+        } else {
+            clients = clientService.findAll(pageable);
+        }
+        
+        return ResponseEntity.ok(clients);
     }
 
-
-    @GetMapping("/{idClient}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<ClientDto> get(@PathVariable Long idClient) {
-        return ResponseEntity.ok(this.service.byId(idClient).dto());
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<ClientDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(clientService.findById(id));
     }
 
-
-    @PostMapping()
-    @PreAuthorize("hasRole('ADMIN')")
-    public ClientDto save(@Valid @RequestBody ClientDto client) {
-        return this.service.save(client).dto();
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<ClientDto> create(@Valid @RequestBody CreateClientDto createClientDto) {
+        ClientDto created = clientService.create(createClientDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-
-    @DeleteMapping("/{idClient}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void delete(@PathVariable Long idClient) {
-        this.service.delete(idClient);
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<ClientDto> update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateClientDto updateClientDto) {
+        return ResponseEntity.ok(clientService.update(id, updateClientDto));
     }
 
-
-    @PutMapping("/{idClient}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ClientDto update(@Valid @RequestBody ClientDto client) {
-        return this.service.update(client).dto();
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        clientService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
