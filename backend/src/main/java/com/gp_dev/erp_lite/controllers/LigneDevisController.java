@@ -1,5 +1,6 @@
 package com.gp_dev.erp_lite.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +17,8 @@ import java.util.List;
 import com.gp_dev.erp_lite.services.LigneDevisService;
 import com.gp_dev.erp_lite.dtos.LigneDevisDto;
 
+@Tag(name = "Legacy - LigneDevis (Deprecated)", description = "Legacy endpoints - Use Quote Items within Quotes API (/api/v1/quotes) instead. Will be removed in future versions.")
+@Deprecated
 @Log4j2
 @RequiredArgsConstructor
 @RestController

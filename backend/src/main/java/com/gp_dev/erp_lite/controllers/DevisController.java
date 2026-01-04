@@ -2,6 +2,7 @@ package com.gp_dev.erp_lite.controllers;
 
 import com.gp_dev.erp_lite.dtos.DevisDto;
 import com.gp_dev.erp_lite.services.DevisService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
+@Tag(name = "Legacy - Devis (Deprecated)", description = "Legacy endpoints - Use Quotes API (/api/v1/quotes) instead. Will be removed in future versions.")
+@Deprecated
 @Log4j2
 @RequiredArgsConstructor
 @RestController

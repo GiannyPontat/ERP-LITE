@@ -22,9 +22,11 @@ public class LigneDevis {
 
     @NotBlank
     private String description;
+
     @Min(1)
     private int quantite;
 
+    @Column(name = "prix_unitaire")
     private double prixUnitaire;
 
     public LigneDevisDto dto() {

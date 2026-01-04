@@ -112,6 +112,20 @@
             <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
+        
+        <!-- PDF Generation (OpenPDF - open source fork of iText) -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.30</version>
+        </dependency>
+        
+        <!-- H2 Database for testing -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 	<build>

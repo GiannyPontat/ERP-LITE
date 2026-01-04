@@ -21,9 +21,15 @@ public class Devis {
     @ManyToOne
     private Client client;
 
+    @Column(name = "date_creation")
     private LocalDate dateCreation;
+
     private String statut;
+
+    @Column(name = "total_ht")
     private double totalHT;
+
+    @Column(name = "total_ttc")
     private double totalTTC;
 
     @OneToMany(mappedBy = "devis")
