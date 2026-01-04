@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { DashboardStats, MonthlyRevenue } from '../models/dashboard.model';
+import { DashboardStats, MonthlyRevenue, TopClient } from '../models/dashboard.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +22,13 @@ export class DashboardService {
       params = params.set('year', year.toString());
     }
     return this.http.get<MonthlyRevenue[]>(`${this.apiUrl}/monthly-revenue`, { params });
+  }
+
+  /**
+   * Récupère le top 10 des clients par chiffre d'affaires
+   */
+  getTopClients(): Observable<TopClient[]> {
+    return this.http.get<TopClient[]>(`${this.apiUrl}/top-clients`);
   }
 }
 

@@ -15,3 +15,10 @@ export interface MonthlyRevenue {
   revenue: number;
 }
 
+export interface TopClient {
+  clientId: number;
+  clientName: string;
+  totalRevenue: number;
+  invoiceCount: number;
+}
+

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Invoice } from '../models/invoice.model';
@@ -42,6 +42,45 @@ export class InvoiceService {
 
   getByStatus(status: string): Observable<Invoice[]> {
     return this.http.get<Invoice[]>(`${this.apiUrl}/status/${status}`);
+  }
+
+  /**
+   * Génère un PDF pour la facture
+   */
+  generatePdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/pdf`, {
+      responseType: 'blob'
+    });
+  }
+
+  /**
+   * Envoie la facture par email
+   */
+  sendInvoiceByEmail(invoiceId: number, recipientEmail: string): Observable<string> {
+    const params = new HttpParams().set('email', recipientEmail);
+    return this.http.post(`${this.apiUrl}/${invoiceId}/send-email`, null, {
+      params,
+      responseType: 'text'
+    });
+  }
+
+  /**
+   * Envoie une relance pour facture impayée
+   */
+  sendInvoiceReminder(invoiceId: number, recipientEmail: string): Observable<string> {
+    const params = new HttpParams().set('email', recipientEmail);
+    return this.http.post(`${this.apiUrl}/${invoiceId}/send-reminder`, null, {
+      params,
+      responseType: 'text'
+    });
+  }
+
+  /**
+   * Marque une facture comme payée
+   */
+  markAsPaid(invoiceId: number, paidDate?: string): Observable<Invoice> {
+    const body = paidDate ? { paidDate } : null;
+    return this.http.patch<Invoice>(`${this.apiUrl}/${invoiceId}/mark-as-paid`, body);
   }
 }
 
