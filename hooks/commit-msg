@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# Couleurs
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Ignorer les messages de merge/revert automatiques
+if echo "$COMMIT_MSG" | grep -qE "^(Merge|Revert)"; then
+    exit 0
+fi
+
+# Vérifier le format Conventional Commits (optionnel)
+# Décommentez pour forcer le format
+# if ! echo "$COMMIT_MSG" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+"; then
+#     echo -e "${RED}❌ Format de commit invalide${NC}"
+#     echo -e "${YELLOW}"
+#     echo "Format attendu: type(scope): message"
+#     echo ""
+#     echo "Types valides:"
+#     echo "  feat:     Nouvelle fonctionnalité"
+#     echo "  fix:      Correction de bug"
+#     echo "  docs:     Documentation"
+#     echo "  style:    Formatage, pas de changement de code"
+#     echo "  refactor: Refactoring"
+#     echo "  test:     Ajout/modification de tests"
+#     echo "  chore:    Maintenance, dépendances"
+#     echo "  perf:     Amélioration de performance"
+#     echo ""
+#     echo "Exemples:"
+#     echo "  feat(auth): add email verification"
+#     echo "  fix(quote): correct PDF generation error"
+#     echo "  docs: update README with email setup"
+#     echo -e "${NC}"
+#     exit 1
+# fi
+
+# Vérifier la longueur du message
+FIRST_LINE=$(echo "$COMMIT_MSG" | head -n 1)
+LENGTH=${#FIRST_LINE}
+
+if [ $LENGTH -gt 72 ]; then
+    echo -e "${YELLOW}⚠️  La première ligne est longue ($LENGTH caractères)${NC}"
+    echo -e "${YELLOW}   Recommandation: max 72 caractères${NC}"
+fi
+
+if [ $LENGTH -lt 10 ]; then
+    echo -e "${RED}❌ Message de commit trop court ($LENGTH caractères)${NC}"
+    echo -e "${YELLOW}   Minimum: 10 caractères${NC}"
+    exit 1
+fi
+
+exit 0
