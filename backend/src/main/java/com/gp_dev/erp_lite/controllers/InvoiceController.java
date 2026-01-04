@@ -2,6 +2,7 @@ package com.gp_dev.erp_lite.controllers;
 
 import com.gp_dev.erp_lite.dtos.ErrorResponse;
 import com.gp_dev.erp_lite.dtos.InvoiceDto;
+import com.gp_dev.erp_lite.dtos.MarkAsPaidRequest;
 import com.gp_dev.erp_lite.services.EmailService;
 import com.gp_dev.erp_lite.services.InvoiceService;
 import com.gp_dev.erp_lite.services.PdfService;
@@ -207,5 +208,48 @@ public class InvoiceController {
         InvoiceDto invoiceDto = invoiceService.findById(id);
         emailService.sendInvoiceEmail(invoiceDto, email);
         return ResponseEntity.ok("Facture envoyée avec succès à " + email);
+    }
+
+    @Operation(summary = "Send invoice reminder", description = "Sends a payment reminder email for overdue invoices",
+        security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reminder sent successfully"),
+        @ApiResponse(responseCode = "404", description = "Invoice not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid email address",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @PostMapping("/{id}/send-reminder")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<String> sendInvoiceReminder(@PathVariable Long id, @RequestParam String email) {
+        log.info("Send reminder request for invoice ID: {} to: {}", id, email);
+        InvoiceDto invoiceDto = invoiceService.findById(id);
+        emailService.sendInvoiceReminder(invoiceDto, email);
+        return ResponseEntity.ok("Rappel envoyé avec succès à " + email);
+    }
+
+    @Operation(summary = "Mark invoice as paid", description = "Marks an invoice as paid with optional payment date",
+        security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Invoice marked as paid successfully",
+            content = @Content(schema = @Schema(implementation = InvoiceDto.class))),
+        @ApiResponse(responseCode = "404", description = "Invoice not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Invoice already paid",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @PatchMapping("/{id}/mark-as-paid")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<InvoiceDto> markAsPaid(
+            @PathVariable Long id,
+            @RequestBody(required = false) MarkAsPaidRequest request) {
+        log.info("Mark as paid request for invoice ID: {}", id);
+        InvoiceDto invoiceDto = invoiceService.markAsPaid(
+                id,
+                request != null ? request.getPaidDate() : null
+        );
+        return ResponseEntity.ok(invoiceDto);
     }
 }

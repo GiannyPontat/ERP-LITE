@@ -2,6 +2,7 @@ package com.gp_dev.erp_lite.controllers;
 
 import com.gp_dev.erp_lite.dtos.DashboardStatsDto;
 import com.gp_dev.erp_lite.dtos.MonthlyRevenueDto;
+import com.gp_dev.erp_lite.dtos.TopClientDto;
 import com.gp_dev.erp_lite.services.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,6 +54,19 @@ public class DashboardController {
             @RequestParam(required = false) Integer year) {
         log.info("Get monthly revenue request received for year: {}", year);
         return ResponseEntity.ok(dashboardService.getMonthlyRevenue(year));
+    }
+
+    @Operation(summary = "Get top clients", description = "Retrieves the top 10 clients by revenue",
+        security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Top clients retrieved successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @GetMapping("/top-clients")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
+    public ResponseEntity<List<TopClientDto>> getTopClients() {
+        log.info("Get top clients request received");
+        return ResponseEntity.ok(dashboardService.getTopClients());
     }
 }
 

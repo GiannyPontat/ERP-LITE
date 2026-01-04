@@ -1,6 +1,7 @@
 package com.gp_dev.erp_lite.controllers;
 
 import com.gp_dev.erp_lite.dtos.ErrorResponse;
+import com.gp_dev.erp_lite.dtos.InvoiceDto;
 import com.gp_dev.erp_lite.dtos.QuoteDto;
 import com.gp_dev.erp_lite.services.EmailService;
 import com.gp_dev.erp_lite.services.PdfService;
@@ -186,6 +187,25 @@ public class QuoteController {
         QuoteDto quoteDto = quoteService.findById(id);
         emailService.sendQuoteEmail(quoteDto, email);
         return ResponseEntity.ok("Devis envoyé avec succès à " + email);
+    }
+
+    @Operation(summary = "Convert quote to invoice", description = "Converts an accepted quote into an invoice",
+        security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Quote converted successfully",
+            content = @Content(schema = @Schema(implementation = InvoiceDto.class))),
+        @ApiResponse(responseCode = "404", description = "Quote not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Quote status invalid for conversion",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @PostMapping("/{id}/convert-to-invoice")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<InvoiceDto> convertToInvoice(@PathVariable Long id) {
+        log.info("Convert to invoice request for quote ID: {}", id);
+        InvoiceDto invoiceDto = quoteService.convertToInvoice(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(invoiceDto);
     }
 }
 
