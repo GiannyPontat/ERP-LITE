@@ -1,0 +1,77 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo-container">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="8" height="8" rx="2" fill="#2563EB"/>
+            <rect x="12" y="12" width="8" height="8" rx="2" fill="#3B82F6"/>
+          </svg>
+        </div>
+        <span class="logo-text">ERP-LITE</span>
+      </div>
+      <h1 class="login-title">{{ 'connexion' | translate | capitalize }}</h1>
+      <p class="login-subtitle">Connexion à votre compte</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>{{ 'email' | translate | capitalize }}</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Adresse e-mail" />
+        <mat-icon matPrefix class="field-icon">email</mat-icon>
+        @if (email?.hasError('required') && email?.touched) {
+          <mat-error>{{ 'l email est requis' | translate | capitalize }}</mat-error>
+        }
+        @if (email?.hasError('email') && email?.touched) {
+          <mat-error>{{ 'format d email invalide' | translate | capitalize }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="password-field-wrapper">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>{{ 'mot de passe' | translate | capitalize }}</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="Mot de passe" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="togglePasswordVisibility()"
+            class="password-toggle"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-icon matPrefix class="field-icon">lock</mat-icon>
+          @if (password?.hasError('required') && password?.touched) {
+            <mat-error>{{ 'le mot de passe est requis' | translate | capitalize }}</mat-error>
+          }
+          @if (password?.hasError('minlength') && password?.touched) {
+            <mat-error>{{ 'le mot de passe doit contenir au moins 6 caracteres' | translate | capitalize }}</mat-error>
+          }
+        </mat-form-field>
+        <a href="#" class="forgot-password-link">Mot de passe oublié ?</a>
+      </div>
+
+      <button
+        mat-raised-button
+        type="submit"
+        class="login-button"
+        [disabled]="loading || loginForm.invalid">
+        @if (loading) {
+          <span>{{ 'connexion en cours' | translate | capitalize }}...</span>
+        } @else {
+          <span>{{ 'se connecter' | translate | capitalize }}</span>
+        }
+      </button>
+    </form>
+
+    <div class="register-link">
+      <span>{{ 'pas encore de compte' | translate | capitalize }} ? </span>
+      <a routerLink="/auth/register" class="register-link-text">{{ 's inscrire' | translate | capitalize }}</a>
+    </div>
+  </div>
+</div>

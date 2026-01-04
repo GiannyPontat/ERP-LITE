@@ -1,0 +1,125 @@
+<div class="client-form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        {{ isEditMode ? ('modifier le client' | translate | capitalize) : ('nouveau client' | translate | capitalize) }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loading && isEditMode) {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+        </div>
+      } @else {
+        <form [formGroup]="clientForm" (ngSubmit)="onSubmit()" class="client-form">
+          <!-- Informations de l'entreprise -->
+          <h3>{{ 'informations de l\'entreprise' | translate | capitalize }}</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'nom de l\'entreprise' | translate | capitalize }} *</mat-label>
+              <input matInput formControlName="companyName" required>
+              @if (clientForm.get('companyName')?.hasError('required') && clientForm.get('companyName')?.touched) {
+                <mat-error>{{ getErrorMessage('companyName') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'siret' | translate | capitalize }}</mat-label>
+              <input matInput formControlName="siret" placeholder="14 chiffres">
+              @if (clientForm.get('siret')?.hasError('pattern') && clientForm.get('siret')?.touched) {
+                <mat-error>{{ getErrorMessage('siret') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'delai de paiement (jours)' | translate | capitalize }}</mat-label>
+              <input matInput type="number" formControlName="paymentTerms" min="0">
+            </mat-form-field>
+          </div>
+
+          <!-- Contact -->
+          <h3>{{ 'contact' | translate | capitalize }}</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'prenom' | translate | capitalize }}</mat-label>
+              <input matInput formControlName="contactFirstName">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'nom' | translate | capitalize }}</mat-label>
+              <input matInput formControlName="contactLastName">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'email' | translate | capitalize }} *</mat-label>
+              <input matInput type="email" formControlName="email" required>
+              @if (clientForm.get('email')?.hasError('required') && clientForm.get('email')?.touched) {
+                <mat-error>{{ getErrorMessage('email') }}</mat-error>
+              }
+              @if (clientForm.get('email')?.hasError('email') && clientForm.get('email')?.touched) {
+                <mat-error>{{ getErrorMessage('email') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'telephone' | translate | capitalize }}</mat-label>
+              <input matInput formControlName="phone">
+            </mat-form-field>
+          </div>
+
+          <!-- Adresse -->
+          <h3>{{ 'adresse' | translate | capitalize }}</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'adresse' | translate | capitalize }}</mat-label>
+              <input matInput formControlName="address">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'ville' | translate | capitalize }}</mat-label>
+              <input matInput formControlName="city">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'code postal' | translate | capitalize }}</mat-label>
+              <input matInput formControlName="postalCode" placeholder="12345">
+              @if (clientForm.get('postalCode')?.hasError('pattern') && clientForm.get('postalCode')?.touched) {
+                <mat-error>{{ getErrorMessage('postalCode') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Notes -->
+          <h3>{{ 'notes' | translate | capitalize }}</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'notes' | translate | capitalize }}</mat-label>
+              <textarea matInput formControlName="notes" rows="4"></textarea>
+            </mat-form-field>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions">
+            <button mat-button type="button" routerLink="/clients">{{ 'annuler' | translate | capitalize }}</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="loading || clientForm.invalid">
+              @if (loading) {
+                <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+                {{ isEditMode ? ('enregistrer' | translate | capitalize) : ('creer' | translate | capitalize) }}
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

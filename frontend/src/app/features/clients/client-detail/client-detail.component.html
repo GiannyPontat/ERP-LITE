@@ -1,0 +1,112 @@
+<div class="client-detail-container">
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  } @else if (client) {
+    <div class="header-actions">
+      <button mat-button routerLink="/clients">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'retour' | translate | capitalize }}
+      </button>
+      <button mat-raised-button color="primary" [routerLink]="['/clients', client.id, 'edit']">
+        <mat-icon>edit</mat-icon>
+        {{ 'modifier' | translate | capitalize }}
+      </button>
+    </div>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ getCompanyName() }}</mat-card-title>
+        <mat-card-subtitle>{{ 'details du client' | translate | capitalize }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Informations de l'entreprise -->
+        <section class="info-section">
+          <h3>{{ 'informations de l\'entreprise' | translate | capitalize }}</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <strong>{{ 'nom de l\'entreprise' | translate | capitalize }}:</strong>
+              <span>{{ getCompanyName() }}</span>
+            </div>
+            @if (client.siret) {
+              <div class="info-item">
+                <strong>{{ 'siret' | translate | capitalize }}:</strong>
+                <span>{{ client.siret }}</span>
+              </div>
+            }
+            @if (client.paymentTerms) {
+              <div class="info-item">
+                <strong>{{ 'delai de paiement' | translate | capitalize }}:</strong>
+                <span>{{ client.paymentTerms }} {{ 'jours' | translate }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <!-- Contact -->
+        <section class="info-section">
+          <h3>{{ 'contact' | translate | capitalize }}</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <strong>{{ 'contact' | translate | capitalize }}:</strong>
+              <span>{{ getContactName() }}</span>
+            </div>
+            @if (client.email) {
+              <div class="info-item">
+                <strong>{{ 'email' | translate | capitalize }}:</strong>
+                <span>{{ client.email }}</span>
+              </div>
+            }
+            @if (client.phone || client.telephone) {
+              <div class="info-item">
+                <strong>{{ 'telephone' | translate | capitalize }}:</strong>
+                <span>{{ client.phone || client.telephone }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        @if (client.address || client.city || client.postalCode) {
+          <mat-divider></mat-divider>
+          <!-- Adresse -->
+          <section class="info-section">
+            <h3>{{ 'adresse' | translate | capitalize }}</h3>
+            <div class="info-grid">
+              @if (client.address || client.adresse) {
+                <div class="info-item">
+                  <strong>{{ 'adresse' | translate | capitalize }}:</strong>
+                  <span>{{ client.address || client.adresse }}</span>
+                </div>
+              }
+              @if (client.city) {
+                <div class="info-item">
+                  <strong>{{ 'ville' | translate | capitalize }}:</strong>
+                  <span>{{ client.city }}</span>
+                </div>
+              }
+              @if (client.postalCode) {
+                <div class="info-item">
+                  <strong>{{ 'code postal' | translate | capitalize }}:</strong>
+                  <span>{{ client.postalCode }}</span>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        @if (client.notes) {
+          <mat-divider></mat-divider>
+          <!-- Notes -->
+          <section class="info-section">
+            <h3>{{ 'notes' | translate | capitalize }}</h3>
+            <p class="notes">{{ client.notes }}</p>
+          </section>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

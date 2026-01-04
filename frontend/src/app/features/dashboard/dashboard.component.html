@@ -1,0 +1,121 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>{{ 'tableau de bord' | translate | capitalize }}</h1>
+    @if (currentUser$ | async; as user) {
+      <p class="welcome-message">{{ 'bienvenue' | translate | capitalize }}, {{ user.email }}</p>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  } @else if (stats) {
+    <!-- Statistiques principales -->
+    <div class="stats-grid">
+      <mat-card class="stat-card revenue">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>euro</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ 'chiffre d affaires' | translate | capitalize }}</h3>
+            <p class="stat-value">{{ formatCurrency(stats.totalRevenue) }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card profit">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ 'benefices' | translate | capitalize }}</h3>
+            <p class="stat-value">{{ formatCurrency(stats.totalProfit) }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card unpaid">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ 'factures impayees' | translate | capitalize }}</h3>
+            <p class="stat-value">{{ stats.unpaidInvoicesCount }}</p>
+            <p class="stat-subvalue">{{ formatCurrency(stats.unpaidInvoicesAmount) }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card quotes">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>description</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ 'devis en cours' | translate | capitalize }}</h3>
+            <p class="stat-value">{{ stats.activeQuotesCount }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Statistiques complémentaires -->
+    <div class="secondary-stats">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ 'vue d ensemble' | translate | capitalize }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="overview-grid">
+            <div class="overview-item">
+              <mat-icon>people</mat-icon>
+              <div>
+                <strong>{{ stats.totalClientsCount }}</strong>
+                <span>{{ 'clients' | translate | capitalize }}</span>
+              </div>
+            </div>
+            <div class="overview-item">
+              <mat-icon>description</mat-icon>
+              <div>
+                <strong>{{ stats.totalQuotesCount }}</strong>
+                <span>{{ 'devis' | translate | capitalize }}</span>
+              </div>
+            </div>
+            <div class="overview-item">
+              <mat-icon>receipt</mat-icon>
+              <div>
+                <strong>{{ stats.totalInvoicesCount }}</strong>
+                <span>{{ 'factures' | translate | capitalize }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Graphique CA mensuel -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ 'evolution du ca mensuel' | translate | capitalize }} ({{ currentYear }})</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <div class="chart-bars">
+              @for (revenue of monthlyRevenues; track revenue.month) {
+                <div class="chart-bar-wrapper">
+                  <div class="chart-bar" [style.height.%]="getBarHeight(revenue.revenue)">
+                    <span class="chart-value">{{ formatCurrency(revenue.revenue) }}</span>
+                  </div>
+                  <span class="chart-label">{{ getMonthName(revenue.month) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

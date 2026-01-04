@@ -1,4 +1,124 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles for ERP-LITE */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@import './styles/variables';
+
+/* ============================================ */
+/* BASE STYLES */
+/* ============================================ */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  font-size: $font-body;
+  line-height: 1.5;
+  color: $text-primary;
+  background-color: $bg-secondary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================ */
+/* TYPOGRAPHY OVERRIDES */
+/* ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: $font-weight-medium;
+}
+
+h1 { font-size: $font-display; }
+h2 { font-size: $font-title; }
+h3 { font-size: $font-subtitle; }
+
+p {
+  margin: 0;
+}
+
+/* ============================================ */
+/* MATERIAL DESIGN OVERRIDES */
+/* ============================================ */
+
+// Reduce Material Card padding
+.mat-mdc-card {
+  --mdc-elevated-card-container-elevation: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.mat-mdc-card-content {
+  padding: $space-lg !important;
+}
+
+// Compact form fields
+.mat-mdc-form-field {
+  font-size: $font-body;
+
+  .mat-mdc-form-field-infix {
+    min-height: 40px;
+  }
+}
+
+// Compact buttons
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button {
+  font-size: $font-body-sm;
+  letter-spacing: 0.3px;
+}
+
+// Compact icons globally
+.mat-icon {
+  font-size: $icon-medium !important;
+  width: $icon-medium !important;
+  height: $icon-medium !important;
+}
+
+// Compact table
+.mat-mdc-table {
+  font-size: $font-body-sm;
+
+  .mat-mdc-header-cell {
+    font-size: $font-caption;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* ============================================ */
+/* SNACKBAR STYLES */
+/* ============================================ */
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #f44336;
+  --mdc-snackbar-supporting-text-color: white;
+}
+
+::ng-deep .error-snackbar .mdc-snackbar__label {
+  color: white !important;
+}
+
+/* ============================================ */
+/* SCROLLBAR STYLES */
+/* ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg-tertiary;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $text-disabled;
+  border-radius: $radius-sm;
+
+  &:hover {
+    background: $text-hint;
+  }
+}

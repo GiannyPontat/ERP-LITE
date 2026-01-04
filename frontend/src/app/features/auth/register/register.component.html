@@ -1,0 +1,116 @@
+<div class="register-container">
+  <mat-card class="register-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'inscription' | translate | capitalize }}</mat-card-title>
+      <mat-card-subtitle>ERP-LITE</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+        <div class="name-fields">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'prenom' | translate | capitalize }}</mat-label>
+            <input matInput formControlName="firstName" placeholder="{{ 'prenom' | translate | capitalize }}" />
+            <mat-icon matPrefix>person</mat-icon>
+            @if (firstName?.hasError('required') && firstName?.touched) {
+              <mat-error>{{ 'le prenom est requis' | translate | capitalize }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'nom' | translate | capitalize }}</mat-label>
+            <input matInput formControlName="lastName" placeholder="{{ 'nom' | translate | capitalize }}" />
+            <mat-icon matPrefix>person</mat-icon>
+            @if (lastName?.hasError('required') && lastName?.touched) {
+              <mat-error>{{ 'le nom est requis' | translate | capitalize }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'email' | translate | capitalize }}</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="exemple@email.com" />
+          <mat-icon matPrefix>email</mat-icon>
+          @if (email?.hasError('required') && email?.touched) {
+            <mat-error>{{ 'l email est requis' | translate | capitalize }}</mat-error>
+          }
+          @if (email?.hasError('email') && email?.touched) {
+            <mat-error>{{ 'format d email invalide' | translate | capitalize }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'mot de passe' | translate | capitalize }}</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="{{ 'au moins 8 caracteres' | translate | capitalize }}" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-icon matPrefix>lock</mat-icon>
+          @if (password?.hasError('required') && password?.touched) {
+            <mat-error>{{ 'le mot de passe est requis' | translate | capitalize }}</mat-error>
+          }
+          @if (password?.hasError('minlength') && password?.touched) {
+            <mat-error>{{ 'le mot de passe doit contenir au moins 8 caracteres' | translate | capitalize }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'confirmer le mot de passe' | translate | capitalize }}</mat-label>
+          <input
+            matInput
+            [type]="hideConfirmPassword ? 'password' : 'text'"
+            formControlName="confirmPassword"
+            placeholder="{{ 'confirmez votre mot de passe' | translate | capitalize }}" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="toggleConfirmPasswordVisibility()"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hideConfirmPassword">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-icon matPrefix>lock</mat-icon>
+          @if (confirmPassword?.hasError('required') && confirmPassword?.touched) {
+            <mat-error>{{ 'la confirmation est requise' | translate | capitalize }}</mat-error>
+          }
+          @if (confirmPassword?.hasError('passwordMismatch') && confirmPassword?.touched) {
+            <mat-error>{{ 'les mots de passe ne correspondent pas' | translate | capitalize }}</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="full-width"
+            [disabled]="loading || registerForm.invalid">
+            @if (loading) {
+              <span>{{ 'inscription en cours' | translate | capitalize }}...</span>
+            } @else {
+              <span>{{ 's inscrire' | translate | capitalize }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <div class="login-link">
+        <span>{{ 'deja un compte' | translate | capitalize }}? </span>
+        <a routerLink="/auth/login" class="link">{{ 'se connecter' | translate | capitalize }}</a>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+</div>

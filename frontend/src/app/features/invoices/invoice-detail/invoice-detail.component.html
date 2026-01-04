@@ -1,0 +1,133 @@
+<div class="invoice-detail-container">
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  } @else if (invoice) {
+    <div class="header-actions">
+      <button mat-button routerLink="/invoices">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'retour' | translate | capitalize }}
+      </button>
+      <button mat-raised-button color="primary" [routerLink]="['/invoices', invoice.id, 'edit']">
+        <mat-icon>edit</mat-icon>
+        {{ 'modifier' | translate | capitalize }}
+      </button>
+    </div>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ 'facture' | translate | capitalize }} {{ invoice.invoiceNumber }}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip [color]="getStatusColor(invoice.status)">{{ invoice.status }}</mat-chip>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Informations générales -->
+        <section class="info-section">
+          <h3>{{ 'informations generales' | translate | capitalize }}</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <strong>{{ 'numero' | translate | capitalize }}:</strong>
+              <span>{{ invoice.invoiceNumber }}</span>
+            </div>
+            <div class="info-item">
+              <strong>{{ 'client' | translate | capitalize }}:</strong>
+              <span>{{ invoice.clientName || invoice.client?.companyName || '-' }}</span>
+            </div>
+            @if (invoice.quoteNumber) {
+              <div class="info-item">
+                <strong>{{ 'devis d\'origine' | translate | capitalize }}:</strong>
+                <span>{{ invoice.quoteNumber }}</span>
+              </div>
+            }
+            <div class="info-item">
+              <strong>{{ 'date' | translate | capitalize }}:</strong>
+              <span>{{ invoice.date | date:'shortDate' }}</span>
+            </div>
+            @if (invoice.dueDate) {
+              <div class="info-item">
+                <strong>{{ 'date d\'echeance' | translate | capitalize }}:</strong>
+                <span>{{ invoice.dueDate | date:'shortDate' }}</span>
+              </div>
+            }
+            @if (invoice.paidDate) {
+              <div class="info-item">
+                <strong>{{ 'date de paiement' | translate | capitalize }}:</strong>
+                <span>{{ invoice.paidDate | date:'shortDate' }}</span>
+              </div>
+            }
+            <div class="info-item">
+              <strong>{{ 'taux de tva' | translate | capitalize }}:</strong>
+              <span>{{ invoice.taxRate }}%</span>
+            </div>
+          </div>
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <!-- Items -->
+        <section class="info-section">
+          <h3>{{ 'lignes de facture' | translate | capitalize }}</h3>
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>{{ 'description' | translate | capitalize }}</th>
+                <th>{{ 'quantite' | translate | capitalize }}</th>
+                <th>{{ 'prix unitaire' | translate | capitalize }}</th>
+                <th>{{ 'total' | translate | capitalize }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of invoice.items; track $index) {
+                <tr>
+                  <td>{{ item.description }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ formatCurrency(item.unitPrice) }}</td>
+                  <td>{{ formatCurrency(item.total) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <!-- Totaux -->
+        <section class="totals-section">
+          <div class="total-row">
+            <strong>{{ 'sous-total' | translate | capitalize }}:</strong>
+            <span>{{ formatCurrency(invoice.subtotal) }}</span>
+          </div>
+          <div class="total-row">
+            <strong>{{ 'tva' | translate | capitalize }} ({{ invoice.taxRate }}%):</strong>
+            <span>{{ formatCurrency(invoice.taxAmount) }}</span>
+          </div>
+          <div class="total-row total-final">
+            <strong>{{ 'total ttc' | translate | capitalize }}:</strong>
+            <span>{{ formatCurrency(invoice.total) }}</span>
+          </div>
+        </section>
+
+        @if (invoice.notes || invoice.termsAndConditions) {
+          <mat-divider></mat-divider>
+
+          @if (invoice.notes) {
+            <section class="info-section">
+              <h3>{{ 'notes' | translate | capitalize }}</h3>
+              <p class="notes">{{ invoice.notes }}</p>
+            </section>
+          }
+
+          @if (invoice.termsAndConditions) {
+            <section class="info-section">
+              <h3>{{ 'conditions generales' | translate | capitalize }}</h3>
+              <p class="notes">{{ invoice.termsAndConditions }}</p>
+            </section>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

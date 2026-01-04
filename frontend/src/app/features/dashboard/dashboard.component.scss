@@ -1,0 +1,291 @@
+@import '../../../styles/variables';
+
+// ============================================
+// CONTAINER
+// ============================================
+
+.dashboard-container {
+  padding: $space-xl;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: $space-lg;
+  }
+}
+
+// ============================================
+// HEADER
+// ============================================
+
+.dashboard-header {
+  margin-bottom: $space-xl;
+
+  h1 {
+    margin: 0 0 $space-xs 0;
+    font-size: $font-display;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+  }
+
+  .welcome-message {
+    color: $text-secondary;
+    font-size: $font-body-sm;
+    margin: 0;
+  }
+}
+
+// ============================================
+// LOADING
+// ============================================
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $space-xxxl;
+}
+
+// ============================================
+// STATS GRID (Main KPIs)
+// ============================================
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: $space-lg;
+  margin-bottom: $space-xl;
+
+  .stat-card {
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: $space-lg;
+      padding: $space-lg !important;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: $radius-lg;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: $icon-xlarge !important;
+        width: $icon-xlarge !important;
+        height: $icon-xlarge !important;
+      }
+    }
+
+    &.revenue .stat-icon {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: $success-color;
+    }
+
+    &.profit .stat-icon {
+      background-color: rgba(33, 150, 243, 0.1);
+      color: $info-color;
+    }
+
+    &.unpaid .stat-icon {
+      background-color: rgba(255, 152, 0, 0.1);
+      color: $warning-color;
+    }
+
+    &.quotes .stat-icon {
+      background-color: rgba(156, 39, 176, 0.1);
+      color: #9c27b0;
+    }
+
+    .stat-content {
+      flex: 1;
+      min-width: 0; // Pour le text-overflow
+
+      h3 {
+        margin: 0 0 $space-xs 0;
+        font-size: $font-caption;
+        font-weight: $font-weight-semibold;
+        color: $text-secondary;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-value {
+        margin: 0;
+        font-size: 22px;
+        font-weight: $font-weight-semibold;
+        color: $text-primary;
+        line-height: 1.2;
+      }
+
+      .stat-subvalue {
+        margin: $space-xs 0 0 0;
+        font-size: $font-caption;
+        color: $text-hint;
+      }
+    }
+  }
+}
+
+// ============================================
+// SECONDARY STATS
+// ============================================
+
+.secondary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: $space-lg;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+
+  // Vue d'ensemble (overview grid)
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $space-md;
+
+    @media (max-width: 500px) {
+      grid-template-columns: 1fr;
+    }
+
+    .overview-item {
+      display: flex;
+      align-items: center;
+      gap: $space-md;
+      padding: $space-md;
+      background-color: $bg-tertiary;
+      border-radius: $radius-md;
+      transition: background-color $transition-fast;
+
+      &:hover {
+        background-color: #EBEBEB;
+      }
+
+      mat-icon {
+        color: $text-hint;
+        font-size: $icon-large !important;
+        width: $icon-large !important;
+        height: $icon-large !important;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        strong {
+          font-size: 20px;
+          font-weight: $font-weight-semibold;
+          color: $text-primary;
+          line-height: 1.2;
+        }
+
+        span {
+          font-size: $font-label;
+          color: $text-secondary;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+
+  // Chart container
+  .chart-container {
+    padding: $space-lg 0;
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      gap: $space-sm;
+      height: 260px;
+      padding: 0 $space-lg;
+
+      .chart-bar-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        max-width: 70px;
+
+        .chart-bar {
+          width: 100%;
+          background: linear-gradient(to top, #2196f3, #64b5f6);
+          border-radius: $radius-sm $radius-sm 0 0;
+          position: relative;
+          transition: all $transition-normal;
+          min-height: 20px;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          padding-top: $space-sm;
+          cursor: pointer;
+
+          &:hover {
+            background: linear-gradient(to top, #1976d2, #42a5f5);
+            transform: translateY(-2px);
+          }
+
+          .chart-value {
+            color: white;
+            font-size: 10px;
+            font-weight: $font-weight-medium;
+            text-align: center;
+            white-space: nowrap;
+            transform: rotate(-45deg);
+            transform-origin: center;
+          }
+        }
+
+        .chart-label {
+          margin-top: $space-sm;
+          font-size: $font-label;
+          font-weight: $font-weight-medium;
+          color: $text-secondary;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: $space-md;
+  }
+
+  .secondary-stats {
+    grid-template-columns: 1fr;
+    gap: $space-md;
+  }
+
+  .chart-container .chart-bars {
+    height: 200px;
+    padding: 0 $space-md;
+
+    .chart-bar-wrapper {
+      max-width: 50px;
+
+      .chart-bar .chart-value {
+        display: none;
+      }
+
+      .chart-label {
+        font-size: 10px;
+      }
+    }
+  }
+}

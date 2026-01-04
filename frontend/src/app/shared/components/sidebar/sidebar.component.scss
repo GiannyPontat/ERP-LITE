@@ -1,0 +1,323 @@
+@import '../../../../styles/variables';
+
+// ============================================
+// SIDEBAR CONTAINER
+// ============================================
+
+.sidebar {
+  width: $sidebar-width;
+  height: 100vh;
+  background-color: $sidebar-bg;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: $z-fixed;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: $shadow-md;
+  transition: transform $transition-normal;
+
+  // Scrollbar personnalisée
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: $radius-sm;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  // État mobile fermé
+  @media (max-width: 768px) {
+    transform: translateX(-100%);
+
+    &.sidebar-open {
+      transform: translateX(0);
+    }
+  }
+}
+
+// ============================================
+// HEADER (Avatar + Nom entreprise)
+// ============================================
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-lg;
+  min-height: $sidebar-header-height;
+  border-bottom: 1px solid $border-color;
+  background-color: $bg-primary;
+}
+
+.sidebar-avatar {
+  width: $avatar-size;
+  height: $avatar-size;
+  border-radius: $radius-full;
+  background-color: $primary-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: $shadow-sm;
+
+  .avatar-initials {
+    color: $bg-primary;
+    font-size: $font-caption;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.5px;
+    user-select: none;
+  }
+}
+
+.company-info {
+  flex: 1;
+  overflow: hidden;
+
+  .company-name {
+    display: block;
+    color: $text-primary;
+    font-size: $font-body;
+    font-weight: $font-weight-medium;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+
+.sidebar-nav {
+  flex: 1;
+  padding: $space-sm 0;
+
+  ::ng-deep {
+    .mat-mdc-list-base {
+      padding: 0;
+    }
+  }
+}
+
+// ============================================
+// SECTIONS DE MENU
+// ============================================
+
+.menu-section {
+  margin-bottom: $space-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.section-title {
+  color: $text-hint;
+  font-size: $font-label;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: $space-xs $space-lg;
+  margin: $space-sm 0 $space-xs 0;
+  user-select: none;
+}
+
+// ============================================
+// ITEMS DE MENU
+// ============================================
+
+.menu-item {
+  position: relative;
+  display: flex !important;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-xs $space-md !important;
+  margin: 0 $space-sm $space-xxs $space-sm !important;
+  min-height: $menu-item-height !important;
+  color: $text-secondary;
+  font-size: $font-body-sm;
+  font-weight: $font-weight-regular;
+  text-decoration: none;
+  border-radius: $radius-md;
+  transition: all $transition-fast;
+  cursor: pointer;
+
+  // Override Material list item styles
+  ::ng-deep {
+    .mdc-list-item__content {
+      display: flex;
+      align-items: center;
+      gap: $space-md;
+    }
+
+    .mat-mdc-list-item-unscoped-content {
+      display: flex;
+      align-items: center;
+      gap: $space-md;
+      flex: 1;
+    }
+  }
+
+  // Hover state
+  &:hover:not(.active) {
+    background-color: $sidebar-item-hover-bg;
+    color: $text-primary;
+
+    .menu-icon {
+      color: $text-primary;
+    }
+  }
+
+  // Active state (route active)
+  &.active {
+    background-color: $sidebar-item-active-bg;
+    color: $accent-color;
+    font-weight: $font-weight-medium;
+    box-shadow: 0 2px 6px rgba(124, 77, 255, 0.15);
+
+    .menu-icon {
+      color: $bg-primary;
+    }
+
+    .menu-label {
+      color: $bg-primary;
+    }
+
+    .menu-badge {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: $bg-primary;
+    }
+  }
+
+  // Focus visible pour accessibilité
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+// ============================================
+// ICÔNES
+// ============================================
+
+.menu-icon {
+  flex-shrink: 0;
+  width: $icon-medium;
+  height: $icon-medium;
+  font-size: $icon-medium;
+  color: $text-secondary;
+  transition: color $transition-fast;
+
+  ::ng-deep {
+    .mat-icon {
+      width: $icon-medium;
+      height: $icon-medium;
+      font-size: $icon-medium;
+    }
+  }
+}
+
+// ============================================
+// LABELS
+// ============================================
+
+.menu-label {
+  flex: 1;
+  color: inherit;
+  font-size: $font-body-sm;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: ellipsis;
+  transition: color $transition-fast;
+}
+
+// ============================================
+// BADGES (Notifications)
+// ============================================
+
+.menu-badge {
+  flex-shrink: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 $space-xs;
+  background-color: $error-color;
+  color: $bg-primary;
+  font-size: $font-label;
+  font-weight: $font-weight-semibold;
+  line-height: 18px;
+  text-align: center;
+  border-radius: $radius-full;
+  transition: all $transition-fast;
+}
+
+// ============================================
+// RIPPLE EFFECT
+// ============================================
+
+::ng-deep {
+  .mat-ripple-element {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .active .mat-ripple-element {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 768px) {
+  .sidebar {
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .sidebar-header {
+    padding: $space-md;
+  }
+
+  .menu-item {
+    padding: $space-sm $space-md !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .sidebar {
+    // Toujours visible sur desktop
+    transform: translateX(0) !important;
+  }
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.sidebar-open {
+  animation: slideIn $transition-normal;
+}

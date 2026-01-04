@@ -1,0 +1,59 @@
+<aside class="sidebar" [class.sidebar-open]="isOpen">
+  <!-- Header avec avatar et nom d'entreprise -->
+  <div class="sidebar-header">
+    <div class="sidebar-avatar">
+      <span class="avatar-initials">{{ initials }}</span>
+    </div>
+    <div class="company-info">
+      <span class="company-name">{{ companyName | translate | capitalize }}</span>
+    </div>
+  </div>
+
+  <!-- Navigation principale -->
+  <nav class="sidebar-nav" role="navigation" aria-label="Menu principal">
+    <mat-nav-list>
+      <!-- Boucle sur chaque section de menu -->
+      @for (section of menuSections; track section.title || $index) {
+        <div class="menu-section">
+          <!-- Titre de section (si présent) -->
+          @if (section.title) {
+            <h3 class="section-title">
+              {{ section.title | translate | uppercase }}
+            </h3>
+          }
+
+          <!-- Items de la section -->
+          @for (item of section.items; track item.route) {
+            <a
+              mat-list-item
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: false}"
+              class="menu-item"
+              [attr.aria-label]="item.ariaLabel"
+              (click)="onItemClick()"
+              matRipple>
+
+              <!-- Icône -->
+              <mat-icon class="menu-icon" matListItemIcon>
+                {{ item.icon }}
+              </mat-icon>
+
+              <!-- Label avec traduction -->
+              <span class="menu-label" matListItemTitle>
+                {{ item.label | translate | capitalize }}
+              </span>
+
+              <!-- Badge optionnel (notifications) -->
+              @if (item.badge && item.badge > 0) {
+                <span class="menu-badge" matListItemMeta>
+                  {{ item.badge }}
+                </span>
+              }
+            </a>
+          }
+        </div>
+      }
+    </mat-nav-list>
+  </nav>
+</aside>

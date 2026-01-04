@@ -1,0 +1,172 @@
+@import '../styles/variables';
+
+// ============================================
+// CONTAINER PRINCIPAL
+// ============================================
+
+.app-container {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+// ============================================
+// BACKDROP (Mobile)
+// ============================================
+
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: calc(#{$z-fixed} - 10);
+  animation: fadeIn $transition-normal ease-in-out;
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// ============================================
+// MAIN WRAPPER
+// ============================================
+
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  transition: margin-left $transition-normal;
+
+  // Sur desktop avec sidebar ouverte
+  &.sidebar-open {
+    margin-left: $sidebar-width;
+  }
+
+  @media (max-width: 768px) {
+    margin-left: 0 !important;
+  }
+}
+
+// ============================================
+// TOOLBAR
+// ============================================
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: $z-sticky;
+  box-shadow: $shadow-sm;
+  min-height: $toolbar-height;
+  max-height: $toolbar-height;
+
+  // Override Material toolbar defaults
+  ::ng-deep {
+    .mat-toolbar {
+      padding: 0 $space-lg;
+    }
+  }
+}
+
+.toolbar-title {
+  font-size: $font-title;
+  font-weight: $font-weight-medium;
+  letter-spacing: 0.25px;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+// Compact toolbar icons
+.toolbar ::ng-deep .mat-icon {
+  font-size: $icon-large !important;
+  width: $icon-large !important;
+  height: $icon-large !important;
+}
+
+// Compact menu button
+.toolbar ::ng-deep .mat-mdc-icon-button {
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+}
+
+// ============================================
+// MAIN CONTENT
+// ============================================
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  background-color: $bg-secondary;
+
+  // Scrollbar personnalisée
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $bg-secondary;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $text-disabled;
+    border-radius: $radius-sm;
+
+    &:hover {
+      background: $text-hint;
+    }
+  }
+}
+
+// ============================================
+// PUBLIC LAYOUT (Login/Register)
+// ============================================
+
+.public-layout {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $bg-secondary;
+  overflow: auto;
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 768px) {
+  .toolbar {
+    min-height: 56px;
+    max-height: 56px;
+
+    ::ng-deep {
+      .mat-toolbar {
+        padding: 0 $space-md;
+      }
+    }
+  }
+
+  .toolbar-title {
+    font-size: $font-subtitle;
+  }
+}

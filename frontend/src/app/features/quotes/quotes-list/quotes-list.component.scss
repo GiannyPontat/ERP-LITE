@@ -1,0 +1,27 @@
+.quotes-container {
+  padding: 20px;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+table {
+  width: 100%;
+}
+

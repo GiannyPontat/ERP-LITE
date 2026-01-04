@@ -1,0 +1,74 @@
+<div class="quotes-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ 'liste des devis' | translate | capitalize }}</mat-card-title>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" routerLink="/quotes/new">
+          <mat-icon>add</mat-icon>
+          {{ 'nouveau devis' | translate | capitalize }}
+        </button>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+        </div>
+      } @else {
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+          <ng-container matColumnDef="quoteNumber">
+            <th mat-header-cell *matHeaderCellDef>{{ 'numero' | translate | capitalize }}</th>
+            <td mat-cell *matCellDef="let quote">{{ quote.quoteNumber || '-' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="clientName">
+            <th mat-header-cell *matHeaderCellDef>{{ 'client' | translate | capitalize }}</th>
+            <td mat-cell *matCellDef="let quote">{{ quote.clientName || quote.client?.companyName || '-' }}</td>
+          </ng-container>
+
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>{{ 'date' | translate | capitalize }}</th>
+                <td mat-cell *matCellDef="let quote">{{ quote.date | date:'shortDate' }}</td>
+              </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ 'statut' | translate | capitalize }}</th>
+            <td mat-cell *matCellDef="let quote">
+              <mat-chip [color]="getStatusColor(quote.status)">{{ quote.status }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>{{ 'total' | translate | capitalize }}</th>
+            <td mat-cell *matCellDef="let quote">{{ formatCurrency(quote.total) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{ 'actions' | translate | capitalize }}</th>
+            <td mat-cell *matCellDef="let quote">
+              <button mat-icon-button color="primary" (click)="viewQuote(quote)" [matTooltip]="'voir' | translate | capitalize">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" (click)="editQuote(quote)" [matTooltip]="'modifier' | translate | capitalize">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteQuote(quote)" [matTooltip]="'supprimer' | translate | capitalize">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+              {{ 'aucun devis trouve' | translate | capitalize }}
+            </td>
+          </tr>
+        </table>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

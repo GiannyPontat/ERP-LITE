@@ -1,0 +1,101 @@
+<div class="clients-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ 'liste des clients' | translate | capitalize }}</mat-card-title>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" routerLink="/clients/new">
+          <mat-icon>add</mat-icon>
+          {{ 'nouveau client' | translate | capitalize }}
+        </button>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Barre de recherche -->
+      <div class="search-bar">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'rechercher un client' | translate | capitalize }}</mat-label>
+          <input matInput [formControl]="searchControl" placeholder="{{ 'nom email siret' | translate | capitalize }}...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Table -->
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+            <!-- Company Name Column -->
+            <ng-container matColumnDef="companyName">
+              <th mat-header-cell *matHeaderCellDef>{{ 'entreprise' | translate | capitalize }}</th>
+              <td mat-cell *matCellDef="let client">{{ getCompanyName(client) }}</td>
+            </ng-container>
+
+            <!-- Contact Name Column -->
+            <ng-container matColumnDef="contactName">
+              <th mat-header-cell *matHeaderCellDef>{{ 'contact' | translate | capitalize }}</th>
+              <td mat-cell *matCellDef="let client">{{ getContactName(client) }}</td>
+            </ng-container>
+
+            <!-- Email Column -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>{{ 'email' | translate | capitalize }}</th>
+              <td mat-cell *matCellDef="let client">{{ client.email || '-' }}</td>
+            </ng-container>
+
+            <!-- Phone Column -->
+            <ng-container matColumnDef="phone">
+              <th mat-header-cell *matHeaderCellDef>{{ 'telephone' | translate | capitalize }}</th>
+              <td mat-cell *matCellDef="let client">{{ client.phone || client.telephone || '-' }}</td>
+            </ng-container>
+
+            <!-- City Column -->
+            <ng-container matColumnDef="city">
+              <th mat-header-cell *matHeaderCellDef>{{ 'ville' | translate | capitalize }}</th>
+              <td mat-cell *matCellDef="let client">{{ client.city || '-' }}</td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>{{ 'actions' | translate | capitalize }}</th>
+              <td mat-cell *matCellDef="let client">
+                <button mat-icon-button color="primary" (click)="viewClient(client)" matTooltip="{{ 'voir' | translate | capitalize }}">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="editClient(client)" matTooltip="{{ 'modifier' | translate | capitalize }}">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteClient(client)" matTooltip="{{ 'supprimer' | translate | capitalize }}">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <!-- No data row -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                {{ 'aucun client trouve' | translate | capitalize }}
+              </td>
+            </tr>
+          </table>
+
+          <!-- Pagination -->
+          <mat-paginator
+            [length]="totalElements"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="[10, 20, 50, 100]"
+            (page)="onPageChange($event)"
+            showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

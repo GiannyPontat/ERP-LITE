@@ -1,0 +1,144 @@
+<div class="quote-form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ isEditMode ? ('modifier le devis' | translate | capitalize) : ('nouveau devis' | translate | capitalize) }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loading && isEditMode) {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+        </div>
+      } @else {
+        <form [formGroup]="quoteForm" (ngSubmit)="onSubmit()" class="quote-form">
+          <!-- Informations générales -->
+          <div class="form-section">
+            <h3>{{ 'informations generales' | translate | capitalize }}</h3>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'client' | translate | capitalize }} *</mat-label>
+                <mat-select formControlName="clientId" required>
+                  @for (client of clients; track client.id) {
+                    <mat-option [value]="client.id">
+                      {{ client.companyName || client.entreprise || client.nom }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'statut' | translate | capitalize }} *</mat-label>
+                <mat-select formControlName="status" required>
+                  @for (status of statuses; track status) {
+                    <mat-option [value]="status">{{ status }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'date' | translate | capitalize }} *</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="date" required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'valide jusqu\'au' | translate | capitalize }}</mat-label>
+                <input matInput [matDatepicker]="pickerValidUntil" formControlName="validUntil">
+                <mat-datepicker-toggle matSuffix [for]="pickerValidUntil"></mat-datepicker-toggle>
+                <mat-datepicker #pickerValidUntil></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'taux de tva (%)' | translate | capitalize }}</mat-label>
+                <input matInput type="number" formControlName="taxRate" min="0" max="100" required>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Items -->
+          <div class="form-section">
+            <h3>{{ 'lignes de devis' | translate | capitalize }}</h3>
+            <div formArrayName="items">
+              @for (item of items.controls; track $index) {
+                <div [formGroupName]="$index" class="item-row">
+                  <mat-form-field appearance="outline" class="description-field">
+                    <mat-label>{{ 'description' | translate | capitalize }} *</mat-label>
+                    <input matInput formControlName="description" required>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="quantity-field">
+                    <mat-label>{{ 'quantite' | translate | capitalize }} *</mat-label>
+                    <input matInput type="number" formControlName="quantity" min="0.01" step="0.01" required>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="price-field">
+                    <mat-label>{{ 'prix unitaire' | translate | capitalize }} *</mat-label>
+                    <input matInput type="number" formControlName="unitPrice" min="0" step="0.01" required>
+                  </mat-form-field>
+
+                  <div class="total-field">
+                    <strong>{{ 'total' | translate | capitalize }}: {{ calculateItemTotal($index) | number:'1.2-2':'fr-FR' }} €</strong>
+                  </div>
+
+                  <button mat-icon-button type="button" color="warn" (click)="removeItem($index)" [disabled]="items.length === 1">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <button mat-button type="button" (click)="addItem()">
+              <mat-icon>add</mat-icon>
+              {{ 'ajouter une ligne' | translate | capitalize }}
+            </button>
+          </div>
+
+          <!-- Totaux -->
+          <div class="totals-section">
+            <div class="total-row">
+              <strong>{{ 'sous-total' | translate | capitalize }}:</strong>
+              <span>{{ calculateSubtotal() | number:'1.2-2':'fr-FR' }} €</span>
+            </div>
+            <div class="total-row">
+              <strong>{{ 'tva' | translate | capitalize }} ({{ quoteForm.get('taxRate')?.value }}%):</strong>
+              <span>{{ calculateTaxAmount() | number:'1.2-2':'fr-FR' }} €</span>
+            </div>
+            <div class="total-row total-final">
+              <strong>{{ 'total ttc' | translate | capitalize }}:</strong>
+              <span>{{ calculateTotal() | number:'1.2-2':'fr-FR' }} €</span>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-section">
+            <h3>{{ 'notes et conditions' | translate | capitalize }}</h3>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'notes' | translate | capitalize }}</mat-label>
+              <textarea matInput formControlName="notes" rows="3"></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'conditions generales' | translate | capitalize }}</mat-label>
+              <textarea matInput formControlName="termsAndConditions" rows="4"></textarea>
+            </mat-form-field>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions">
+            <button mat-button type="button" routerLink="/quotes">{{ 'annuler' | translate | capitalize }}</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="loading || quoteForm.invalid">
+              @if (loading) {
+                <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+                {{ isEditMode ? ('enregistrer' | translate | capitalize) : ('creer' | translate | capitalize) }}
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
