@@ -1,6 +1,7 @@
 package com.gp_dev.erp_lite.exceptions;
 
 import com.gp_dev.erp_lite.dtos.ErrorResponse;
+import jakarta.mail.MessagingException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,11 +68,33 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException ex) {
+        log.error("Bad request: {}", ex.getMessage());
+        ErrorResponse error = ErrorResponse.builder()
+                .message(ex.getMessage())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(MailException.class)
     public ResponseEntity<ErrorResponse> handleMailException(MailException ex) {
         log.error("Email sending error: {}", ex.getMessage());
         ErrorResponse error = ErrorResponse.builder()
                 .message("Failed to send email. Please try again later.")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ErrorResponse> handleMessagingException(MessagingException ex) {
+        log.error("Messaging error: {}", ex.getMessage());
+        ErrorResponse error = ErrorResponse.builder()
+                .message("Erreur lors de l'envoi de l'email : " + ex.getMessage())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .timestamp(LocalDateTime.now())
                 .build();
