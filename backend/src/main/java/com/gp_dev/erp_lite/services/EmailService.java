@@ -23,4 +23,12 @@ public interface EmailService {
      * @param recipientEmail L'adresse email du destinataire
      */
     void sendInvoiceEmail(InvoiceDto invoiceDto, String recipientEmail);
+
+    /**
+     * Envoie une relance pour facture impayée
+     *
+     * @param invoiceDto La facture en retard de paiement
+     * @param recipientEmail L'adresse email du destinataire
+     */
+    void sendInvoiceReminder(InvoiceDto invoiceDto, String recipientEmail);
 }

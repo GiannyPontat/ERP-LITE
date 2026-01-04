@@ -3,6 +3,7 @@ package com.gp_dev.erp_lite.services.impl;
 import com.gp_dev.erp_lite.dtos.InvoiceDto;
 import com.gp_dev.erp_lite.dtos.InvoiceItemDto;
 import com.gp_dev.erp_lite.exceptions.AppException;
+import com.gp_dev.erp_lite.exceptions.BadRequestException;
 import com.gp_dev.erp_lite.models.*;
 import com.gp_dev.erp_lite.repositories.*;
 import com.gp_dev.erp_lite.services.InvoiceService;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -226,6 +228,30 @@ public class InvoiceServiceImpl implements InvoiceService {
             if (invoiceDto.getTotal() != null) invoice.setTotal(invoiceDto.getTotal());
         }
         return invoice;
+    }
+
+    @Override
+    public InvoiceDto markAsPaid(Long invoiceId, LocalDate paidDate) {
+        Invoice invoice = invoiceRepo.findById(invoiceId)
+                .orElseThrow(() -> new AppException("Invoice not found", HttpStatus.NOT_FOUND));
+
+        // Vérifier que la facture n'est pas déjà payée
+        if (invoice.getStatus() == InvoiceStatus.PAID) {
+            throw new BadRequestException("Cette facture est déjà marquée comme payée");
+        }
+
+        // Utiliser la date actuelle si aucune date n'est fournie
+        LocalDate paymentDate = paidDate != null ? paidDate : LocalDate.now();
+
+        // Mettre à jour le statut et la date de paiement
+        invoice.setStatus(InvoiceStatus.PAID);
+        invoice.setPaidDate(paymentDate);
+
+        Invoice savedInvoice = invoiceRepo.save(invoice);
+
+        log.info("Invoice {} marked as paid on {}", invoiceId, paymentDate);
+
+        return toDto(savedInvoice);
     }
 
     private InvoiceDto toDto(Invoice invoice) {

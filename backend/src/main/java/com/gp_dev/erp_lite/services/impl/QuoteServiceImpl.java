@@ -1,14 +1,18 @@
 package com.gp_dev.erp_lite.services.impl;
 
+import com.gp_dev.erp_lite.dtos.InvoiceDto;
 import com.gp_dev.erp_lite.dtos.QuoteDto;
 import com.gp_dev.erp_lite.dtos.QuoteItemDto;
 import com.gp_dev.erp_lite.exceptions.AppException;
+import com.gp_dev.erp_lite.exceptions.BadRequestException;
 import com.gp_dev.erp_lite.models.*;
 import com.gp_dev.erp_lite.repositories.*;
+import com.gp_dev.erp_lite.services.InvoiceService;
 import com.gp_dev.erp_lite.services.NumberGeneratorService;
 import com.gp_dev.erp_lite.services.QuoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Log4j2
-@RequiredArgsConstructor
 @Service
 @Transactional
 public class QuoteServiceImpl implements QuoteService {
@@ -29,6 +32,19 @@ public class QuoteServiceImpl implements QuoteService {
     private final ClientRepo clientRepo;
     private final UserRepo userRepo;
     private final NumberGeneratorService numberGeneratorService;
+    private final InvoiceService invoiceService;
+
+    public QuoteServiceImpl(QuoteRepo quoteRepo, QuoteItemRepo quoteItemRepo,
+                           ClientRepo clientRepo, UserRepo userRepo,
+                           NumberGeneratorService numberGeneratorService,
+                           @Lazy InvoiceService invoiceService) {
+        this.quoteRepo = quoteRepo;
+        this.quoteItemRepo = quoteItemRepo;
+        this.clientRepo = clientRepo;
+        this.userRepo = userRepo;
+        this.numberGeneratorService = numberGeneratorService;
+        this.invoiceService = invoiceService;
+    }
 
     @Override
     public List<QuoteDto> findAll() {
@@ -211,6 +227,49 @@ public class QuoteServiceImpl implements QuoteService {
         } catch (IllegalArgumentException e) {
             throw new AppException("Invalid status: " + status, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    public void updateStatus(Long quoteId, QuoteStatus newStatus) {
+        Quote quote = quoteRepo.findById(quoteId)
+                .orElseThrow(() -> new AppException("Quote not found", HttpStatus.NOT_FOUND));
+
+        quote.setStatus(newStatus);
+        quoteRepo.save(quote);
+
+        log.info("Quote {} status updated to {}", quoteId, newStatus);
+    }
+
+    @Override
+    public InvoiceDto convertToInvoice(Long quoteId) {
+        Quote quote = quoteRepo.findById(quoteId)
+                .orElseThrow(() -> new AppException("Quote not found", HttpStatus.NOT_FOUND));
+
+        // Vérifier que le devis est accepté
+        if (quote.getStatus() != QuoteStatus.ACCEPTED) {
+            throw new BadRequestException(
+                    "Seuls les devis acceptés peuvent être convertis en facture. Statut actuel: " + quote.getStatus()
+            );
+        }
+
+        log.info("Converting quote {} to invoice", quoteId);
+
+        // Créer une InvoiceDto basée sur le Quote
+        InvoiceDto invoiceDto = new InvoiceDto();
+        invoiceDto.setClientId(quote.getClient().getId());
+        invoiceDto.setCreatedById(quote.getCreatedBy().getId());
+        invoiceDto.setQuoteId(quoteId);
+        // Les autres champs seront remplis par createFromQuote
+
+        // Appeler le service Invoice pour créer la facture
+        InvoiceDto createdInvoice = invoiceService.createFromQuote(quoteId, invoiceDto);
+
+        // Mettre à jour le statut du devis à CONVERTED
+        updateStatus(quoteId, QuoteStatus.CONVERTED);
+
+        log.info("Quote {} successfully converted to invoice {}", quoteId, createdInvoice.getInvoiceNumber());
+
+        return createdInvoice;
     }
 
     private QuoteDto toDto(Quote quote) {

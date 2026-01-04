@@ -222,6 +222,23 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public void sendInvoiceReminder(InvoiceDto invoiceDto, String recipientEmail) {
+        try {
+            String subject = "⚠️ Rappel - Facture " + invoiceDto.getInvoiceNumber() + " en attente de paiement";
+            String htmlContent = getInvoiceReminderTemplate(invoiceDto);
+            byte[] pdfBytes = pdfService.generateInvoicePdf(invoiceDto);
+
+            sendEmailWithAttachment(recipientEmail, subject, htmlContent, pdfBytes,
+                "facture-" + invoiceDto.getInvoiceNumber() + ".pdf");
+
+            log.info("Invoice reminder sent to: {} for invoice: {}", recipientEmail, invoiceDto.getInvoiceNumber());
+        } catch (Exception e) {
+            log.error("Failed to send invoice reminder to {}: {}", recipientEmail, e.getMessage());
+            throw new RuntimeException("Failed to send invoice reminder", e);
+        }
+    }
+
     private void sendEmailWithAttachment(String to, String subject, String htmlContent,
                                         byte[] attachment, String attachmentName) {
         try {
@@ -427,6 +444,89 @@ public class EmailServiceImpl implements EmailService {
             invoiceDto.getTotal(),
             invoiceDto.getStatus().toString().equals("PAID") ? "" :
                 "<div class=\"payment-info\"><p><strong>⚠️ Paiement requis:</strong> Cette facture est en attente de paiement. Merci de procéder au règlement avant la date d'échéance.</p></div>"
+        );
+    }
+
+    private String getInvoiceReminderTemplate(InvoiceDto invoiceDto) {
+        return """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #FF6F00; color: white; padding: 20px; text-align: center; }
+        .content { background-color: #f9f9f9; padding: 30px; }
+        .info-box { background-color: #fff; border: 1px solid #ddd; border-radius: 4px;
+                    padding: 15px; margin: 20px 0; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0;
+                    border-bottom: 1px solid #eee; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { font-weight: bold; color: #666; }
+        .info-value { color: #333; }
+        .total { font-size: 1.2em; font-weight: bold; color: #D32F2F; }
+        .urgent { background-color: #ffebee; border-left: 4px solid #D32F2F;
+                  padding: 15px; margin: 20px 0; font-weight: bold; color: #D32F2F; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+        .attachment-notice { background-color: #e3f2fd; border-left: 4px solid #2196F3;
+                             padding: 12px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚠️ Rappel de Paiement</h1>
+        </div>
+        <div class="content">
+            <h2>Bonjour,</h2>
+
+            <div class="urgent">
+                <p>Nous constatons que la facture N° %s n'a pas encore été réglée.</p>
+            </div>
+
+            <p>Nous vous remercions de bien vouloir régulariser cette situation dans les plus brefs délais.</p>
+
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">Numéro de facture:</span>
+                    <span class="info-value">%s</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date d'émission:</span>
+                    <span class="info-value">%s</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date d'échéance:</span>
+                    <span class="info-value" style="color: #D32F2F; font-weight: bold;">%s</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Montant dû:</span>
+                    <span class="total">%.2f €</span>
+                </div>
+            </div>
+
+            <div class="attachment-notice">
+                <p><strong>📎 Pièce jointe:</strong> La facture complète est disponible en PDF joint à cet email.</p>
+            </div>
+
+            <p>Si vous avez déjà procédé au paiement, veuillez ne pas tenir compte de ce rappel.</p>
+            <p>Pour toute question concernant cette facture, n'hésitez pas à nous contacter.</p>
+
+            <p>Cordialement,<br>L'équipe ERP Lite</p>
+        </div>
+        <div class="footer">
+            <p>© 2026 ERP Lite. Tous droits réservés.</p>
+        </div>
+    </div>
+</body>
+</html>
+""".formatted(
+            invoiceDto.getInvoiceNumber(),
+            invoiceDto.getInvoiceNumber(),
+            invoiceDto.getDate(),
+            invoiceDto.getDueDate(),
+            invoiceDto.getTotal()
         );
     }
 }

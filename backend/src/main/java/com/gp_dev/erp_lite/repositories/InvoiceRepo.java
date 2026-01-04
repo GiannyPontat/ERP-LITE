@@ -1,5 +1,6 @@
 package com.gp_dev.erp_lite.repositories;
 
+import com.gp_dev.erp_lite.dtos.TopClientDto;
 import com.gp_dev.erp_lite.models.Invoice;
 import com.gp_dev.erp_lite.models.InvoiceStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,5 +24,21 @@ public interface InvoiceRepo extends JpaRepository<Invoice, Long> {
     
     @Query("SELECT MAX(i.invoiceNumber) FROM Invoice i WHERE i.invoiceNumber LIKE ?1")
     Optional<String> findLastInvoiceNumberByPrefix(String prefix);
+
+    @Query("""
+        SELECT new com.gp_dev.erp_lite.dtos.TopClientDto(
+            c.id,
+            COALESCE(c.companyName, c.nom),
+            SUM(i.total),
+            COUNT(i.id)
+        )
+        FROM Invoice i
+        JOIN i.client c
+        WHERE i.status = com.gp_dev.erp_lite.models.InvoiceStatus.PAID
+        GROUP BY c.id, c.companyName, c.nom
+        ORDER BY SUM(i.total) DESC
+        LIMIT 10
+    """)
+    List<TopClientDto> findTop10Clients();
 }
 

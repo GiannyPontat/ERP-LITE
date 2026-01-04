@@ -2,6 +2,7 @@ package com.gp_dev.erp_lite.services.impl;
 
 import com.gp_dev.erp_lite.dtos.DashboardStatsDto;
 import com.gp_dev.erp_lite.dtos.MonthlyRevenueDto;
+import com.gp_dev.erp_lite.dtos.TopClientDto;
 import com.gp_dev.erp_lite.models.Invoice;
 import com.gp_dev.erp_lite.models.InvoiceStatus;
 import com.gp_dev.erp_lite.models.Quote;
@@ -118,6 +119,12 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         return monthlyRevenues;
+    }
+
+    @Override
+    public List<TopClientDto> getTopClients() {
+        log.info("Retrieving top 10 clients by revenue");
+        return invoiceRepo.findTop10Clients();
     }
 }
 
