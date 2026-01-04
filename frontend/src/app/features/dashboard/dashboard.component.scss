@@ -258,6 +258,82 @@
 }
 
 // ============================================
+// TOP CLIENTS
+// ============================================
+
+.top-clients-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+
+  .client-item {
+    display: flex;
+    align-items: center;
+    padding: $space-md;
+    border-radius: $radius-md;
+    background-color: rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+      transform: translateX(4px);
+    }
+
+    .client-rank {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: $font-weight-bold;
+      font-size: $font-body-sm;
+      margin-right: $space-md;
+      flex-shrink: 0;
+    }
+
+    .client-info {
+      flex: 1;
+      min-width: 0;
+
+      .client-name {
+        font-weight: $font-weight-medium;
+        font-size: $font-body;
+        color: $text-primary;
+        margin-bottom: $space-xs;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .client-stats {
+        display: flex;
+        gap: $space-lg;
+        font-size: $font-body-sm;
+
+        .client-revenue {
+          color: $success-color;
+          font-weight: $font-weight-medium;
+        }
+
+        .client-invoices {
+          color: $text-secondary;
+        }
+      }
+    }
+  }
+}
+
+.no-data {
+  text-align: center;
+  padding: $space-xl;
+  color: $text-secondary;
+  font-size: $font-body-sm;
+}
+
+// ============================================
 // RESPONSIVE
 // ============================================
 

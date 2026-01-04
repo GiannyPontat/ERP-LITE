@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
-import { MatCardModule, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent } from '@angular/material/card';
+import { CommonModule } from '@angular/common';
+import { MatCardModule, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -8,7 +8,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { AuthService } from '../../core/services/auth.service';
 import { DashboardService } from '../../core/services/dashboard.service';
-import { DashboardStats, MonthlyRevenue } from '../../core/models/dashboard.model';
+import { DashboardStats, MonthlyRevenue, TopClient } from '../../core/models/dashboard.model';
 import { TranslateModule } from '@ngx-translate/core';
 import { CapitalizePipe } from '../../shared/pipes/capitalize.pipe';
 
@@ -17,8 +17,6 @@ import { CapitalizePipe } from '../../shared/pipes/capitalize.pipe';
   standalone: true,
   imports: [
     CommonModule,
-    CurrencyPipe,
-    DecimalPipe,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -27,7 +25,6 @@ import { CapitalizePipe } from '../../shared/pipes/capitalize.pipe';
     MatGridListModule,
     MatCardHeader,
     MatCardTitle,
-    MatCardSubtitle,
     MatCardContent,
     TranslateModule,
     CapitalizePipe
@@ -38,7 +35,9 @@ import { CapitalizePipe } from '../../shared/pipes/capitalize.pipe';
 export class DashboardComponent implements OnInit {
   stats?: DashboardStats;
   monthlyRevenues: MonthlyRevenue[] = [];
+  topClients: TopClient[] = [];
   loading = false;
+  loadingTopClients = false;
   currentUser$;
   currentYear = new Date().getFullYear();
 
@@ -53,6 +52,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.loadStats();
     this.loadMonthlyRevenue();
+    this.loadTopClients();
   }
 
   loadStats(): void {
@@ -80,6 +80,23 @@ export class DashboardComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading monthly revenue:', error);
+      }
+    });
+  }
+
+  loadTopClients(): void {
+    this.loadingTopClients = true;
+    this.dashboardService.getTopClients().subscribe({
+      next: (clients) => {
+        this.topClients = clients;
+        this.loadingTopClients = false;
+      },
+      error: (error) => {
+        console.error('Error loading top clients:', error);
+        this.snackBar.open('Erreur lors du chargement des meilleurs clients', 'Fermer', {
+          duration: 5000
+        });
+        this.loadingTopClients = false;
       }
     });
   }
