@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +10,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { QuoteService } from '../../../core/services/quote.service';
 import { Quote, QuoteStatus } from '../../../core/models/quote.model';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -23,6 +26,7 @@ import { CapitalizePipe } from '../../../shared/pipes/capitalize.pipe';
     CommonModule,
     DatePipe,
     RouterLink,
+    FormsModule,
     MatTableModule,
     MatCardModule,
     MatButtonModule,
@@ -32,6 +36,8 @@ import { CapitalizePipe } from '../../../shared/pipes/capitalize.pipe';
     MatChipsModule,
     MatTooltipModule,
     MatDialogModule,
+    MatMenuModule,
+    MatDividerModule,
     TranslateModule,
     CapitalizePipe
   ],
@@ -41,7 +47,17 @@ import { CapitalizePipe } from '../../../shared/pipes/capitalize.pipe';
 export class QuotesListComponent implements OnInit {
   displayedColumns: string[] = ['quoteNumber', 'clientName', 'date', 'status', 'total', 'actions'];
   dataSource = new MatTableDataSource<Quote>([]);
+  quotes: Quote[] = [];
+  filteredQuotes: Quote[] = [];
   loading = false;
+  
+  // Nouveaux états pour le design moderne
+  viewMode: 'grid' | 'list' = 'grid';
+  searchQuery = '';
+  selectedStatus: QuoteStatus | null = null;
+
+  // Exposer l'enum pour le template
+  QuoteStatus = QuoteStatus;
 
   constructor(
     private quoteService: QuoteService,
@@ -58,10 +74,12 @@ export class QuotesListComponent implements OnInit {
     this.loading = true;
     this.quoteService.getAll().subscribe({
       next: (quotes) => {
+        this.quotes = quotes;
+        this.filteredQuotes = quotes;
         this.dataSource.data = quotes;
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading quotes:', error);
         this.snackBar.open('Erreur lors du chargement des devis', 'Fermer', {
           duration: 5000
@@ -69,6 +87,63 @@ export class QuotesListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  // Filtrage par statut
+  filterByStatus(status: QuoteStatus | null): void {
+    this.selectedStatus = status;
+    this.applyFilters();
+  }
+
+  // Recherche
+  onSearch(): void {
+    this.applyFilters();
+  }
+
+  // Applique tous les filtres
+  applyFilters(): void {
+    let filtered = [...this.quotes];
+
+    // Filtre par statut
+    if (this.selectedStatus) {
+      filtered = filtered.filter(q => q.status === this.selectedStatus);
+    }
+
+    // Filtre par recherche
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(q => 
+        (q.quoteNumber?.toLowerCase().includes(query)) ||
+        (q.clientName?.toLowerCase().includes(query)) ||
+        (q.client?.companyName?.toLowerCase().includes(query)) ||
+        (q.client?.email?.toLowerCase().includes(query))
+      );
+    }
+
+    this.filteredQuotes = filtered;
+  }
+
+  // Obtenir les devis par statut
+  getQuotesByStatus(status: QuoteStatus): Quote[] {
+    return this.quotes.filter(q => q.status === status);
+  }
+
+  // Calculer le montant total
+  getTotalAmount(): number {
+    return this.quotes.reduce((sum, q) => sum + (q.total || 0), 0);
+  }
+
+  // Obtenir le label du statut
+  getStatusLabel(status: QuoteStatus): string {
+    const labels: Record<QuoteStatus, string> = {
+      DRAFT: 'Brouillon',
+      SENT: 'Envoyé',
+      ACCEPTED: 'Accepté',
+      REJECTED: 'Refusé',
+      EXPIRED: 'Expiré',
+      CONVERTED: 'Converti'
+    };
+    return labels[status] || status;
   }
 
   viewQuote(quote: Quote): void {
@@ -101,7 +176,7 @@ export class QuotesListComponent implements OnInit {
             });
             this.loadQuotes();
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error deleting quote:', error);
             this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
               duration: 5000
@@ -112,14 +187,70 @@ export class QuotesListComponent implements OnInit {
     });
   }
 
+  downloadPdf(quote: Quote): void {
+    if (!quote.id) return;
+    
+    this.quoteService.generatePdf(quote.id).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${quote.quoteNumber || 'devis'}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        
+        this.snackBar.open('PDF téléchargé avec succès', 'Fermer', {
+          duration: 3000
+        });
+      },
+      error: (error: any) => {
+        console.error('Error downloading PDF:', error);
+        this.snackBar.open('Erreur lors du téléchargement du PDF', 'Fermer', {
+          duration: 5000
+        });
+      }
+    });
+  }
+
+  sendByEmail(quote: Quote): void {
+    if (!quote.id || !quote.client?.email) {
+      this.snackBar.open('Email du client manquant', 'Fermer', {
+        duration: 3000
+      });
+      return;
+    }
+    
+    this.quoteService.sendQuoteByEmail(quote.id, quote.client.email).subscribe({
+      next: () => {
+        this.snackBar.open('Devis envoyé par email avec succès', 'Fermer', {
+          duration: 3000
+        });
+        this.loadQuotes();
+      },
+      error: (error: any) => {
+        console.error('Error sending email:', error);
+        this.snackBar.open('Erreur lors de l\'envoi de l\'email', 'Fermer', {
+          duration: 5000
+        });
+      }
+    });
+  }
+
+  convertToInvoice(quote: Quote): void {
+    if (!quote.id) return;
+    
+    // Pour l'instant, on navigue juste vers la création de facture avec le quote ID
+    this.router.navigate(['/invoices/new'], { queryParams: { quoteId: quote.id } });
+  }
+
   getStatusColor(status: QuoteStatus): string {
     const colors: Record<QuoteStatus, string> = {
-      [QuoteStatus.DRAFT]: 'default',
-      [QuoteStatus.SENT]: 'primary',
-      [QuoteStatus.ACCEPTED]: 'accent',
-      [QuoteStatus.REJECTED]: 'warn',
-      [QuoteStatus.EXPIRED]: 'warn',
-      [QuoteStatus.CONVERTED]: 'accent'
+      DRAFT: 'default',
+      SENT: 'primary',
+      ACCEPTED: 'accent',
+      REJECTED: 'warn',
+      EXPIRED: 'warn',
+      CONVERTED: 'accent'
     };
     return colors[status] || 'default';
   }

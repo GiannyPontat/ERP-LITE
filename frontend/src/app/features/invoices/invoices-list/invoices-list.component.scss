@@ -46,8 +46,8 @@
       color: white;
     }
 
-    &.client-badge {
-      @include gradient-bg($color-client, $color-client-light);
+    &.invoice-badge {
+      @include gradient-bg($color-invoice, $color-invoice-light);
     }
   }
 
@@ -69,10 +69,10 @@
 
   .header-actions {
     .btn-primary {
-      @include button-modern($text-white, $color-client);
+      @include button-modern($text-white, $color-invoice);
       padding: $space-3 $space-6;
       font-size: $font-size-base;
-      box-shadow: 0 4px 14px 0 rgba(249, 115, 22, 0.25);
+      box-shadow: 0 4px 14px 0 rgba(6, 182, 212, 0.25);
 
       mat-icon {
         font-size: 20px;
@@ -117,14 +117,14 @@
   }
 
   &.kpi-primary {
-    border-left: 4px solid $color-client;
+    border-left: 4px solid $color-invoice;
     
     .kpi-icon {
-      background: linear-gradient(135deg, $color-client-light, $color-client);
+      background: linear-gradient(135deg, $color-invoice-light, $color-invoice);
     }
 
     &::before {
-      background: $color-client;
+      background: $color-invoice;
     }
   }
 
@@ -140,15 +140,15 @@
     }
   }
 
-  &.kpi-warning {
-    border-left: 4px solid $color-warning;
+  &.kpi-error {
+    border-left: 4px solid $color-error;
     
     .kpi-icon {
-      background: linear-gradient(135deg, $color-warning-light, $color-warning);
+      background: linear-gradient(135deg, $color-error-light, $color-error);
     }
 
     &::before {
-      background: $color-warning;
+      background: $color-error;
     }
   }
 
@@ -234,6 +234,70 @@
     }
   }
 
+  .filter-group {
+    display: flex;
+    gap: $space-2;
+    flex-wrap: wrap;
+
+    .filter-btn {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      padding: $space-2 $space-4;
+      border-radius: $radius-lg;
+      border: 1px solid $border-light;
+      background: $bg-card;
+      color: $text-secondary;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      transition: all $transition-base;
+
+      &:hover {
+        border-color: $color-invoice;
+        background: $color-invoice-bg;
+        color: $color-invoice;
+      }
+
+      &.active {
+        background: $color-invoice;
+        color: white;
+        border-color: $color-invoice;
+        box-shadow: 0 4px 14px 0 rgba(6, 182, 212, 0.25);
+      }
+
+      .badge {
+        @include badge-modern($color-gray-100, $text-secondary);
+        min-width: 24px;
+        text-align: center;
+
+        &.badge-gray {
+          background: $color-gray-200;
+        }
+
+        &.badge-info {
+          background: $color-info-bg;
+          color: $color-info;
+        }
+
+        &.badge-success {
+          background: $color-success-bg;
+          color: $color-success;
+        }
+
+        &.badge-error {
+          background: $color-error-bg;
+          color: $color-error;
+        }
+      }
+
+      &.active .badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+    }
+  }
+
   .view-toggle {
     display: flex;
     gap: $space-1;
@@ -250,11 +314,11 @@
 
       &:hover {
         background: $bg-card;
-        color: $color-client;
+        color: $color-invoice;
       }
 
       &.active {
-        background: $color-client;
+        background: $color-invoice;
         color: white;
         box-shadow: $shadow-sm;
       }
@@ -268,9 +332,9 @@
   }
 }
 
-.clients-grid {
+.invoices-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: $space-6;
 
   @media (max-width: $breakpoint-md) {
@@ -278,7 +342,7 @@
   }
 }
 
-.client-card {
+.invoice-card {
   @include card-modern;
   padding: $space-5;
   cursor: pointer;
@@ -292,7 +356,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, $color-client, $color-client-light);
+    background: linear-gradient(90deg, $color-invoice, $color-invoice-light);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform $transition-base;
@@ -308,83 +372,158 @@
     align-items: center;
     margin-bottom: $space-4;
 
+    .card-number {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+    }
+
+    .card-status {
+      @include badge-modern($color-gray-100, $text-secondary);
+      font-size: $font-size-xs;
+
+      &.status-draft {
+        background: $color-gray-200;
+        color: $color-gray-700;
+      }
+
+      &.status-sent {
+        background: $color-info-bg;
+        color: $color-info;
+      }
+
+      &.status-paid {
+        background: $color-success-bg;
+        color: $color-success;
+      }
+
+      &.status-overdue {
+        background: $color-error-bg;
+        color: $color-error;
+      }
+
+      &.status-cancelled {
+        background: $color-gray-200;
+        color: $color-gray-700;
+      }
+
+      &.status-partially_paid {
+        background: $color-warning-bg;
+        color: $color-warning;
+      }
+    }
+  }
+
+  .card-client {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3;
+    background: $bg-hover;
+    border-radius: $radius-lg;
+    margin-bottom: $space-4;
+
     .client-avatar {
-      width: 56px;
-      height: 56px;
+      width: 48px;
+      height: 48px;
       border-radius: $radius-full;
-      background: linear-gradient(135deg, $color-client-light, $color-client);
+      background: linear-gradient(135deg, $color-invoice-light, $color-invoice);
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
 
       mat-icon {
         color: white;
-        font-size: 28px;
-        width: 28px;
-        height: 28px;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
       }
     }
 
-    .card-menu {
+    .client-info {
+      flex: 1;
+      min-width: 0;
+
+      .client-name {
+        font-size: $font-size-base;
+        font-weight: $font-weight-semibold;
+        color: $text-primary;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .client-email {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .card-details {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    margin-bottom: $space-4;
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      font-size: $font-size-sm;
+      color: $text-secondary;
+
+      .detail-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: $text-hint;
+      }
+    }
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: $space-4;
+    border-top: 1px solid $border-light;
+
+    .card-amount {
+      .amount-label {
+        display: block;
+        font-size: $font-size-xs;
+        color: $text-hint;
+        margin-bottom: 2px;
+      }
+
+      .amount-value {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        color: $color-invoice;
+      }
+    }
+
+    .card-actions {
       .action-btn {
         color: $text-hint;
         transition: all $transition-base;
 
         &:hover {
-          color: $color-client;
-          background: $color-client-bg;
-        }
-      }
-    }
-  }
-
-  .card-body {
-    .company-name {
-      font-size: $font-size-lg;
-      font-weight: $font-weight-bold;
-      color: $text-primary;
-      margin: 0 0 $space-1 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .contact-name {
-      font-size: $font-size-sm;
-      color: $text-secondary;
-      margin: 0 0 $space-4 0;
-    }
-
-    .card-details {
-      display: flex;
-      flex-direction: column;
-      gap: $space-2;
-
-      .detail-item {
-        display: flex;
-        align-items: center;
-        gap: $space-2;
-        font-size: $font-size-sm;
-        color: $text-secondary;
-
-        .detail-icon {
-          font-size: 16px;
-          width: 16px;
-          height: 16px;
-          color: $text-hint;
-        }
-
-        span {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          color: $color-invoice;
+          background: $color-invoice-bg;
         }
       }
     }
   }
 }
 
-.clients-table-container {
+.invoices-table-container {
   @include card-modern;
   padding: 0;
   overflow: hidden;
@@ -424,6 +563,10 @@
         background: $bg-hover;
       }
 
+      &.overdue {
+        background: rgba(239, 68, 68, 0.05);
+      }
+
       td {
         padding: $space-4 $space-5;
         border-bottom: 1px solid $border-light;
@@ -435,7 +578,12 @@
         }
       }
 
-      .company-cell {
+      .invoice-number {
+        font-weight: $font-weight-semibold;
+        color: $color-invoice;
+      }
+
+      .client-cell {
         display: flex;
         align-items: center;
         gap: $space-3;
@@ -444,7 +592,7 @@
           width: 36px;
           height: 36px;
           border-radius: $radius-full;
-          background: linear-gradient(135deg, $color-client-light, $color-client);
+          background: linear-gradient(135deg, $color-invoice-light, $color-invoice);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -458,10 +606,54 @@
           }
         }
 
-        .company-name-sm {
+        .client-name-sm {
           font-weight: $font-weight-medium;
           color: $text-primary;
         }
+
+        .client-email-sm {
+          font-size: $font-size-xs;
+          color: $text-secondary;
+        }
+      }
+
+      .status-badge {
+        @include badge-modern($color-gray-100, $text-secondary);
+
+        &.status-draft {
+          background: $color-gray-200;
+          color: $color-gray-700;
+        }
+
+        &.status-sent {
+          background: $color-info-bg;
+          color: $color-info;
+        }
+
+        &.status-paid {
+          background: $color-success-bg;
+          color: $color-success;
+        }
+
+        &.status-overdue {
+          background: $color-error-bg;
+          color: $color-error;
+        }
+
+        &.status-cancelled {
+          background: $color-gray-200;
+          color: $color-gray-700;
+        }
+
+        &.status-partially_paid {
+          background: $color-warning-bg;
+          color: $color-warning;
+        }
+      }
+
+      .amount-cell {
+        font-weight: $font-weight-semibold;
+        color: $color-invoice;
       }
 
       .action-buttons {
@@ -474,8 +666,8 @@
           transition: all $transition-base;
 
           &:hover {
-            color: $color-client;
-            background: $color-client-bg;
+            color: $color-invoice;
+            background: $color-invoice-bg;
           }
 
           mat-icon {
@@ -543,7 +735,7 @@
   }
 
   button {
-    @include button-modern($text-white, $color-client);
+    @include button-modern($text-white, $color-invoice);
   }
 }
 
@@ -583,9 +775,4 @@
 
 .animate-scale-in {
   animation: scaleIn $transition-base ease-out;
-}
-
-::ng-deep .mat-mdc-paginator {
-  @include card-modern;
-  margin-top: $space-6;
 }

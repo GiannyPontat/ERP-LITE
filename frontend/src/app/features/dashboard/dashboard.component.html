@@ -1,152 +1,359 @@
 <div class="dashboard-container">
+  <!-- Welcome Header -->
   <div class="dashboard-header">
-    <h1>{{ 'tableau de bord' | translate | capitalize }}</h1>
-    @if (currentUser$ | async; as user) {
-      <p class="welcome-message">{{ 'bienvenue' | translate | capitalize }}, {{ user.email }}</p>
-    }
+    <div class="header-content">
+      <div>
+        <h1>
+          @if (currentUser$ | async; as user) {
+            @if (user?.email) {
+              Bonjour, {{ user.email.split('@')[0] }} 👋
+            } @else {
+              {{ 'tableau de bord' | translate | capitalize }}
+            }
+          } @else {
+            {{ 'tableau de bord' | translate | capitalize }}
+          }
+        </h1>
+        <p class="subtitle">{{ 'bienvenue' | translate | capitalize }} - Voici ce qui se passe aujourd'hui sur votre activité.</p>
+      </div>
+      <div class="date-badge">
+        <mat-icon>calendar_today</mat-icon>
+        <span>{{ getCurrentDate() }}</span>
+      </div>
+    </div>
   </div>
 
-  @if (loading) {
+  @if (loading()) {
     <div class="loading-container">
       <mat-spinner diameter="50"></mat-spinner>
     </div>
-  } @else if (stats) {
-    <!-- Statistiques principales -->
-    <div class="stats-grid">
-      <mat-card class="stat-card revenue">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>euro</mat-icon>
-          </div>
-          <div class="stat-content">
-            <h3>{{ 'chiffre d affaires' | translate | capitalize }}</h3>
-            <p class="stat-value">{{ formatCurrency(stats.totalRevenue) }}</p>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card profit">
-        <mat-card-content>
-          <div class="stat-icon">
+  } @else if (stats()) {
+    <!-- KPI Cards -->
+    <div class="kpi-grid" [class.animated]="chartsLoaded()">
+      <!-- CA Card -->
+      <div class="kpi-card revenue" [class.fade-in]="chartsLoaded()" style="--delay: 0">
+        <div class="kpi-header">
+          <div class="kpi-icon revenue-icon">
             <mat-icon>trending_up</mat-icon>
           </div>
-          <div class="stat-content">
-            <h3>{{ 'benefices' | translate | capitalize }}</h3>
-            <p class="stat-value">{{ formatCurrency(stats.totalProfit) }}</p>
-          </div>
-        </mat-card-content>
-      </mat-card>
+          <span class="kpi-badge positive">+12%</span>
+        </div>
+        <h3 class="kpi-label">{{ 'chiffre d affaires' | translate | capitalize }}</h3>
+        <p class="kpi-value">{{ formatCurrency(stats()?.totalRevenue) }}</p>
+        <p class="kpi-subtitle">Ce mois-ci</p>
+      </div>
 
-      <mat-card class="stat-card unpaid">
-        <mat-card-content>
-          <div class="stat-icon">
+      <!-- Retard Card -->
+      <div class="kpi-card overdue" [class.fade-in]="chartsLoaded()" style="--delay: 1">
+        <div class="kpi-header">
+          <div class="kpi-icon overdue-icon">
             <mat-icon>warning</mat-icon>
           </div>
-          <div class="stat-content">
-            <h3>{{ 'factures impayees' | translate | capitalize }}</h3>
-            <p class="stat-value">{{ stats.unpaidInvoicesCount }}</p>
-            <p class="stat-subvalue">{{ formatCurrency(stats.unpaidInvoicesAmount) }}</p>
-          </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+        <h3 class="kpi-label">{{ 'factures impayees' | translate | capitalize }}</h3>
+        <p class="kpi-value">{{ stats()?.unpaidInvoicesCount || 0 }}</p>
+        <p class="kpi-subtitle">Total: {{ formatCurrency(stats()?.unpaidInvoicesAmount) }}</p>
+      </div>
 
-      <mat-card class="stat-card quotes">
-        <mat-card-content>
-          <div class="stat-icon">
+      <!-- Devis Card -->
+      <div class="kpi-card quotes" [class.fade-in]="chartsLoaded()" style="--delay: 2">
+        <div class="kpi-header">
+          <div class="kpi-icon quotes-icon">
             <mat-icon>description</mat-icon>
           </div>
-          <div class="stat-content">
-            <h3>{{ 'devis en cours' | translate | capitalize }}</h3>
-            <p class="stat-value">{{ stats.activeQuotesCount }}</p>
+        </div>
+        <h3 class="kpi-label">{{ 'devis en cours' | translate | capitalize }}</h3>
+        <p class="kpi-value">{{ stats()?.activeQuotesCount || 0 }}</p>
+        <p class="kpi-subtitle">En attente de signature</p>
+      </div>
+
+      <!-- Interventions Card -->
+      <div class="kpi-card interventions" [class.fade-in]="chartsLoaded()" style="--delay: 3">
+        <div class="kpi-header">
+          <div class="kpi-icon interventions-icon">
+            <mat-icon>build</mat-icon>
           </div>
-        </mat-card-content>
+        </div>
+        <h3 class="kpi-label">Interventions</h3>
+        <p class="kpi-value">{{ getTotalInterventions() }}</p>
+        <p class="kpi-subtitle">Ce mois-ci</p>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+      <!-- Line Chart -->
+      <mat-card class="chart-card line-chart" [class.fade-in-up]="chartsLoaded()">
+        <div class="chart-header">
+          <h3>Évolution du C.A.</h3>
+          <select class="chart-select">
+            <option>6 derniers mois</option>
+            <option>Cette année</option>
+          </select>
+        </div>
+        <div class="chart-container">
+          <svg class="line-chart-svg" viewBox="0 0 600 200" preserveAspectRatio="none">
+            <!-- Grid Lines -->
+            <line x1="0" y1="50" x2="600" y2="50" stroke="#E2E8F0" stroke-width="1" />
+            <line x1="0" y1="100" x2="600" y2="100" stroke="#E2E8F0" stroke-width="1" />
+            <line x1="0" y1="150" x2="600" y2="150" stroke="#E2E8F0" stroke-width="1" />
+            
+            <!-- Area under the line -->
+            <defs>
+              <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#2563EB;stop-opacity:0.2" />
+                <stop offset="100%" style="stop-color:#2563EB;stop-opacity:0.02" />
+              </linearGradient>
+            </defs>
+            
+            <!-- The Line Path with animation -->
+            <path 
+              [attr.d]="generateLinePath(revenueData())" 
+              fill="none" 
+              stroke="#2563EB" 
+              stroke-width="3" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"
+              class="line-path"
+              [class.animate-line]="chartsLoaded()"
+            />
+            
+            <!-- Dots -->
+            @for (point of getPoints(revenueData()); track point.x; let i = $index) {
+              <circle 
+                [attr.cx]="point.x" 
+                [attr.cy]="point.y" 
+                r="5" 
+                fill="#2563EB" 
+                stroke="white" 
+                stroke-width="2"
+                class="chart-dot"
+                [class.animate-dot]="chartsLoaded()"
+                [style.animation-delay.ms]="300 + (i * 100)"
+                [matTooltip]="formatCurrency(point.value)"
+                matTooltipPosition="above"
+              />
+            }
+          </svg>
+          <!-- X Axis Labels -->
+          <div class="chart-labels">
+            @for (d of revenueData(); track d.name) {
+              <span>{{ d.name }}</span>
+            }
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- Donut Chart - Type d'interventions -->
+      <mat-card class="donut-chart-card" [class.fade-in-up]="chartsLoaded()">
+        <h3>Type d'interventions</h3>
+        <div class="donut-chart-container">
+          <div class="donut-chart-wrapper">
+            <svg width="100%" height="100%" viewBox="0 0 42 42" class="donut-svg">
+              <!-- Background circle -->
+              <circle 
+                cx="21" 
+                cy="21" 
+                r="15.91549430918954" 
+                fill="transparent" 
+                stroke="#E2E8F0" 
+                stroke-width="5">
+              </circle>
+              
+              <!-- Segments with tooltips -->
+              @for (segment of getDonutChartSegments(); track segment.color; let i = $index) {
+                <circle 
+                  cx="21" 
+                  cy="21" 
+                  r="15.91549430918954" 
+                  fill="transparent" 
+                  [attr.stroke]="segment.color" 
+                  stroke-width="5" 
+                  [attr.stroke-dasharray]="segment.dashArray" 
+                  [attr.stroke-dashoffset]="segment.offset"
+                  transform="rotate(-90 21 21)"
+                  class="donut-segment"
+                  [class.animate-segment]="donutAnimated()"
+                  [style.animation-delay.ms]="i * 200"
+                  [matTooltip]="getSegmentTooltip(segment)"
+                  matTooltipPosition="above"
+                  (mouseenter)="onSegmentHover(interventionTypes()[i])"
+                  (mouseleave)="onSegmentHover(null)">
+                </circle>
+              }
+            </svg>
+            <div class="donut-center" [class.animate-center]="donutAnimated()">
+              <span class="donut-total">{{ getTotalInterventions() }}</span>
+              <span class="donut-label">Total</span>
+            </div>
+            
+            <!-- Tooltip overlay -->
+            @if (hoveredSegment()) {
+              <div class="donut-tooltip" [style.border-color]="hoveredSegment()?.color">
+                <span class="tooltip-name">{{ hoveredSegment()?.name }}</span>
+                <span class="tooltip-value">{{ hoveredSegment()?.value }} interventions</span>
+                <span class="tooltip-percentage" [style.color]="hoveredSegment()?.color">{{ hoveredSegment()?.percentage }}%</span>
+              </div>
+            }
+          </div>
+          
+          <!-- Legend -->
+          <div class="donut-legend">
+            @for (type of interventionTypes(); track type.name; let i = $index) {
+              <div 
+                class="legend-item" 
+                [class.fade-in]="donutAnimated()" 
+                [style.animation-delay.ms]="400 + (i * 100)"
+                [matTooltip]="type.value + ' interventions'"
+              >
+                <div class="legend-color" [style.background-color]="type.color"></div>
+                <span class="legend-name">{{ type.name }}</span>
+                <span class="legend-percentage">{{ type.percentage }}%</span>
+              </div>
+            }
+          </div>
+        </div>
       </mat-card>
     </div>
 
-    <!-- Statistiques complémentaires -->
-    <div class="secondary-stats">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>{{ 'vue d ensemble' | translate | capitalize }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="overview-grid">
-            <div class="overview-item">
-              <mat-icon>people</mat-icon>
-              <div>
-                <strong>{{ stats.totalClientsCount }}</strong>
-                <span>{{ 'clients' | translate | capitalize }}</span>
-              </div>
+    <!-- Top Services -->
+    <mat-card class="top-services-card" [class.fade-in-up]="chartsLoaded()">
+      <h3>Top Prestations (ce mois)</h3>
+      <div class="services-list">
+        @for (service of topServices(); track service.name; let i = $index) {
+          <div class="service-item" [class.animate-item]="servicesAnimated()" [style.animation-delay.ms]="i * 100">
+            <div class="service-header">
+              <div class="service-name">{{ service.name }}</div>
+              <div class="service-count">{{ service.value }} interventions</div>
             </div>
-            <div class="overview-item">
-              <mat-icon>description</mat-icon>
-              <div>
-                <strong>{{ stats.totalQuotesCount }}</strong>
-                <span>{{ 'devis' | translate | capitalize }}</span>
-              </div>
-            </div>
-            <div class="overview-item">
-              <mat-icon>receipt</mat-icon>
-              <div>
-                <strong>{{ stats.totalInvoicesCount }}</strong>
-                <span>{{ 'factures' | translate | capitalize }}</span>
+            <div class="service-bar-container">
+              <div 
+                class="service-bar" 
+                [style.width.%]="getServiceBarWidth(service)"
+                [class.animate-bar]="servicesAnimated()">
               </div>
             </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        }
+      </div>
+    </mat-card>
 
-      <!-- Graphique CA mensuel -->
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>{{ 'evolution du ca mensuel' | translate | capitalize }} ({{ currentYear }})</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="chart-container">
-            <div class="chart-bars">
-              @for (revenue of monthlyRevenues; track revenue.month) {
-                <div class="chart-bar-wrapper">
-                  <div class="chart-bar" [style.height.%]="getBarHeight(revenue.revenue)">
-                    <span class="chart-value">{{ formatCurrency(revenue.revenue) }}</span>
-                  </div>
-                  <span class="chart-label">{{ getMonthName(revenue.month) }}</span>
+    <!-- Top Clients -->
+    @if (topClients().length > 0) {
+      <mat-card class="top-clients-card" [class.fade-in-up]="chartsLoaded()">
+        <div class="card-header">
+          <h3>Top 10 Clients par CA</h3>
+        </div>
+        <div class="top-clients-list">
+          @for (client of topClients(); track client.clientId; let i = $index) {
+            <div class="client-item" [class.fade-in]="chartsLoaded()" [style.animation-delay.ms]="i * 50">
+              <div class="client-rank">{{ i + 1 }}</div>
+              <div class="client-info">
+                <div class="client-name">{{ client.clientName }}</div>
+                <div class="client-stats">
+                  <span class="client-revenue">{{ formatCurrency(client.totalRevenue) }}</span>
+                  <span class="client-invoices">{{ client.invoiceCount }} facture(s)</span>
                 </div>
-              }
+              </div>
             </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Top 10 Clients -->
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>{{ 'Top 10 Clients par CA' | translate | capitalize }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          @if (loadingTopClients) {
-            <div class="loading-container">
-              <mat-spinner diameter="30"></mat-spinner>
-            </div>
-          } @else if (topClients && topClients.length > 0) {
-            <div class="top-clients-list">
-              @for (client of topClients; track client.clientId; let i = $index) {
-                <div class="client-item">
-                  <div class="client-rank">{{ i + 1 }}</div>
-                  <div class="client-info">
-                    <div class="client-name">{{ client.clientName }}</div>
-                    <div class="client-stats">
-                      <span class="client-revenue">{{ formatCurrency(client.totalRevenue) }}</span>
-                      <span class="client-invoices">{{ client.invoiceCount }} facture(s)</span>
-                    </div>
-                  </div>
-                </div>
-              }
-            </div>
-          } @else {
-            <p class="no-data">Aucune donnée disponible</p>
           }
-        </mat-card-content>
+        </div>
       </mat-card>
-    </div>
+    }
+
+    <!-- Recent Documents Table -->
+    <mat-card class="documents-card" [class.fade-in-up]="chartsLoaded()">
+      <div class="card-header">
+        <h3>Derniers documents</h3>
+        <button mat-button color="primary" routerLink="/quotes">
+          Tout voir
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+      <div class="table-container">
+        <table class="documents-table">
+          <thead>
+            <tr>
+              <th>Réf</th>
+              <th>Client</th>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Montant</th>
+              <th>Statut</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (recentDocs().length > 0) {
+              @for (doc of recentDocs(); track doc.id; let i = $index) {
+                <tr 
+                  class="table-row" 
+                  (click)="navigateToDocument(doc)"
+                  [class.animate-row]="chartsLoaded()"
+                  [style.animation-delay.ms]="i * 50"
+                >
+                  <td class="doc-id">{{ doc.id }}</td>
+                  <td class="doc-client">
+                    <span>{{ doc.client }}</span>
+                    @if (doc.clientEmail) {
+                      <span class="client-email-hint" [matTooltip]="doc.clientEmail">
+                        <mat-icon>email</mat-icon>
+                      </span>
+                    }
+                  </td>
+                  <td>
+                    <span [class]="'doc-type ' + (doc.type === 'Devis' ? 'quote' : 'invoice')">
+                      {{ doc.type }}
+                    </span>
+                  </td>
+                  <td class="doc-date">{{ doc.date }}</td>
+                  <td class="doc-amount">{{ doc.amount }}</td>
+                  <td>
+                    <span [ngClass]="'status-badge ' + getStatusClass(doc.status)">
+                      {{ doc.status }}
+                    </span>
+                  </td>
+                  <td class="actions-column">
+                    <div class="action-buttons">
+                      @if (isDraft(doc.status)) {
+                        <button 
+                          mat-icon-button 
+                          class="action-btn edit-btn" 
+                          matTooltip="Modifier le document"
+                          (click)="editDocument(doc, $event)">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                      }
+                      <button 
+                        mat-icon-button 
+                        class="action-btn" 
+                        matTooltip="Télécharger en PDF"
+                        (click)="downloadDocument(doc, $event)">
+                        <mat-icon>download</mat-icon>
+                      </button>
+                      @if (!isDraft(doc.status)) {
+                        <button 
+                          mat-icon-button 
+                          class="action-btn send-btn"
+                          [class.disabled]="!doc.clientEmail"
+                          [matTooltip]="doc.clientEmail ? 'Envoyer par email à ' + doc.clientEmail : 'Aucun email client disponible'"
+                          [disabled]="!doc.clientEmail"
+                          (click)="sendDocument(doc, $event)">
+                          <mat-icon>send</mat-icon>
+                        </button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @else {
+              <tr>
+                <td colspan="7" class="no-data">Aucun document récent</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
   }
 </div>

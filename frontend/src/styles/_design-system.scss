@@ -1,0 +1,339 @@
+// ============================================
+// 🎨 DESIGN SYSTEM MODERNE - ERP-LITE
+// ============================================
+
+// ============================================
+// PALETTE DE COULEURS VIVES ET HARMONIEUSES
+// ============================================
+
+// Couleurs principales (vives et modernes)
+$color-primary: #4F46E5;        // Indigo vibrant
+$color-primary-light: #818CF8;  
+$color-primary-dark: #3730A3;   
+$color-primary-bg: #EEF2FF;     
+
+$color-secondary: #EC4899;      // Rose vibrant
+$color-secondary-light: #F9A8D4;
+$color-secondary-dark: #BE185D;
+$color-secondary-bg: #FCE7F3;
+
+// Couleurs d'accentuation
+$color-success: #10B981;        // Vert émeraude
+$color-success-light: #6EE7B7;
+$color-success-bg: #D1FAE5;
+
+$color-warning: #F59E0B;        // Orange doré
+$color-warning-light: #FCD34D;
+$color-warning-bg: #FEF3C7;
+
+$color-error: #EF4444;          // Rouge corail
+$color-error-light: #FCA5A5;
+$color-error-bg: #FEE2E2;
+
+$color-info: #3B82F6;           // Bleu ciel
+$color-info-light: #93C5FD;
+$color-info-bg: #DBEAFE;
+
+// Couleurs métier
+$color-quote: #8B5CF6;          // Violet (devis)
+$color-quote-light: #C4B5FD;    // Violet clair
+$color-quote-bg: #EDE9FE;
+
+$color-invoice: #06B6D4;        // Cyan (factures)
+$color-invoice-light: #67E8F9;  // Cyan clair
+$color-invoice-bg: #CFFAFE;
+
+$color-client: #F97316;         // Orange (clients)
+$color-client-light: #FDBA74;   // Orange clair
+$color-client-bg: #FFEDD5;
+
+$color-catalog: #14B8A6;        // Teal (catalogue)
+$color-catalog-light: #5EEAD4;  // Teal clair
+$color-catalog-bg: #CCFBF1;
+
+// Neutrals (gris modernes)
+$color-gray-50: #F9FAFB;
+$color-gray-100: #F3F4F6;
+$color-gray-200: #E5E7EB;
+$color-gray-300: #D1D5DB;
+$color-gray-400: #9CA3AF;
+$color-gray-500: #6B7280;
+$color-gray-600: #4B5563;
+$color-gray-700: #374151;
+$color-gray-800: #1F2937;
+$color-gray-900: #111827;
+
+// Backgrounds
+$bg-app: #F9FAFB;               // Background principal
+$bg-card: #FFFFFF;              // Cartes
+$bg-hover: #F3F4F6;             // Hover states
+$bg-selected: #EEF2FF;          // Selected items
+
+// Texte
+$text-primary: #111827;
+$text-secondary: #6B7280;
+$text-hint: #9CA3AF;
+$text-white: #FFFFFF;
+
+// Bordures
+$border-light: #E5E7EB;
+$border-medium: #D1D5DB;
+$border-dark: #9CA3AF;
+
+// ============================================
+// OMBRES MODERNES (plus prononcées)
+// ============================================
+$shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+$shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+// Ombres colorées
+$shadow-primary: 0 4px 14px 0 rgba(79, 70, 229, 0.25);
+$shadow-success: 0 4px 14px 0 rgba(16, 185, 129, 0.25);
+$shadow-warning: 0 4px 14px 0 rgba(245, 158, 11, 0.25);
+$shadow-error: 0 4px 14px 0 rgba(239, 68, 68, 0.25);
+
+// ============================================
+// BORDER RADIUS (plus arrondis)
+// ============================================
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-2xl: 20px;
+$radius-full: 9999px;
+
+// ============================================
+// SPACING (plus généreux)
+// ============================================
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-8: 32px;
+$space-10: 40px;
+$space-12: 48px;
+$space-16: 64px;
+
+// ============================================
+// TYPOGRAPHY
+// ============================================
+$font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-2xl: 24px;
+$font-size-3xl: 30px;
+$font-size-4xl: 36px;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-extrabold: 800;
+
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+// ============================================
+// TRANSITIONS & ANIMATIONS
+// ============================================
+$transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+// Animation keyframes
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+// ============================================
+// MIXINS UTILITAIRES
+// ============================================
+
+// Card moderne
+@mixin card-modern {
+  background: $bg-card;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border-light;
+  transition: all $transition-base;
+  
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+// Bouton moderne
+@mixin button-modern($color, $bg-color) {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-5;
+  background: $bg-color;
+  color: $color;
+  border: none;
+  border-radius: $radius-lg;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  transition: all $transition-base;
+  box-shadow: $shadow-sm;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: $shadow-md;
+    filter: brightness(1.05);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Badge moderne
+@mixin badge-modern($bg-color, $text-color) {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1 $space-3;
+  background: $bg-color;
+  color: $text-color;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-tight;
+}
+
+// Input moderne
+@mixin input-modern {
+  padding: $space-3 $space-4;
+  background: $bg-card;
+  border: 1px solid $border-light;
+  border-radius: $radius-lg;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  transition: all $transition-base;
+  
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+  
+  &::placeholder {
+    color: $text-hint;
+  }
+}
+
+// Gradient background
+@mixin gradient-bg($color1, $color2) {
+  background: linear-gradient(135deg, $color1 0%, $color2 100%);
+}
+
+// Glass effect
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+// ============================================
+// CLASSES UTILITAIRES
+// ============================================
+
+.animate-fade-in {
+  animation: fadeIn $transition-base ease-out;
+}
+
+.animate-slide-in {
+  animation: slideInRight $transition-base ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn $transition-base ease-out;
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    $color-gray-100 0%,
+    $color-gray-200 50%,
+    $color-gray-100 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+// ============================================
+// RESPONSIVE BREAKPOINTS
+// ============================================
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+@mixin responsive($breakpoint) {
+  @if $breakpoint == sm {
+    @media (min-width: $breakpoint-sm) { @content; }
+  } @else if $breakpoint == md {
+    @media (min-width: $breakpoint-md) { @content; }
+  } @else if $breakpoint == lg {
+    @media (min-width: $breakpoint-lg) { @content; }
+  } @else if $breakpoint == xl {
+    @media (min-width: $breakpoint-xl) { @content; }
+  } @else if $breakpoint == 2xl {
+    @media (min-width: $breakpoint-2xl) { @content; }
+  }
+}
+

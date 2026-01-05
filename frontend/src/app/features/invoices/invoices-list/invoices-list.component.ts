@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,17 +10,23 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { InvoiceService } from '../../../core/services/invoice.service';
 import { Invoice, InvoiceStatus } from '../../../core/models/invoice.model';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { TranslateModule } from '@ngx-translate/core';
+import { CapitalizePipe } from '../../../shared/pipes/capitalize.pipe';
 
 @Component({
   selector: 'app-invoices-list',
   standalone: true,
   imports: [
     CommonModule,
+    DatePipe,
     RouterLink,
+    FormsModule,
     MatTableModule,
     MatCardModule,
     MatButtonModule,
@@ -28,117 +35,26 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/compo
     MatProgressSpinnerModule,
     MatChipsModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    MatMenuModule,
+    MatDividerModule,
+    TranslateModule,
+    CapitalizePipe
   ],
-  template: `
-    <div class="invoices-container">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>Liste des Factures</mat-card-title>
-          <div class="header-actions">
-            <button mat-raised-button color="primary" routerLink="/invoices/new">
-              <mat-icon>add</mat-icon>
-              Nouvelle Facture
-            </button>
-          </div>
-        </mat-card-header>
-
-        <mat-card-content>
-          @if (loading) {
-            <div class="loading-container">
-              <mat-spinner diameter="50"></mat-spinner>
-            </div>
-          } @else {
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
-              <ng-container matColumnDef="invoiceNumber">
-                <th mat-header-cell *matHeaderCellDef>Numéro</th>
-                <td mat-cell *matCellDef="let invoice">{{ invoice.invoiceNumber || '-' }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="clientName">
-                <th mat-header-cell *matHeaderCellDef>Client</th>
-                <td mat-cell *matCellDef="let invoice">{{ invoice.clientName || invoice.client?.companyName || '-' }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="date">
-                <th mat-header-cell *matHeaderCellDef>Date</th>
-                <td mat-cell *matCellDef="let invoice">{{ invoice.date | date:'short' }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef>Statut</th>
-                <td mat-cell *matCellDef="let invoice">
-                  <mat-chip [color]="getStatusColor(invoice.status)">{{ invoice.status }}</mat-chip>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="total">
-                <th mat-header-cell *matHeaderCellDef>Total</th>
-                <td mat-cell *matCellDef="let invoice">{{ formatCurrency(invoice.total) }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let invoice">
-                  <button mat-icon-button color="primary" (click)="viewInvoice(invoice)" matTooltip="Voir">
-                    <mat-icon>visibility</mat-icon>
-                  </button>
-                  <button mat-icon-button color="accent" (click)="editInvoice(invoice)" matTooltip="Modifier">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  <button mat-icon-button color="warn" (click)="deleteInvoice(invoice)" matTooltip="Supprimer">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
-                  Aucune facture trouvée
-                </td>
-              </tr>
-            </table>
-          }
-        </mat-card-content>
-      </mat-card>
-    </div>
-  `,
-  styles: [`
-    .invoices-container {
-      padding: 20px;
-    }
-
-    mat-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-
-      .header-actions {
-        display: flex;
-        gap: 8px;
-      }
-    }
-
-    .loading-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 40px;
-    }
-
-    table {
-      width: 100%;
-    }
-  `]
+  templateUrl: './invoices-list.component.html',
+  styleUrl: './invoices-list.component.scss'
 })
 export class InvoicesListComponent implements OnInit {
-  displayedColumns: string[] = ['invoiceNumber', 'clientName', 'date', 'status', 'total', 'actions'];
   dataSource = new MatTableDataSource<Invoice>([]);
+  invoices: Invoice[] = [];
+  filteredInvoices: Invoice[] = [];
   loading = false;
+  
+  viewMode: 'grid' | 'list' = 'grid';
+  searchQuery = '';
+  selectedStatus: InvoiceStatus | null = null;
+
+  InvoiceStatus = InvoiceStatus;
 
   constructor(
     private invoiceService: InvoiceService,
@@ -155,10 +71,12 @@ export class InvoicesListComponent implements OnInit {
     this.loading = true;
     this.invoiceService.getAll().subscribe({
       next: (invoices) => {
+        this.invoices = invoices;
+        this.filteredInvoices = invoices;
         this.dataSource.data = invoices;
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading invoices:', error);
         this.snackBar.open('Erreur lors du chargement des factures', 'Fermer', {
           duration: 5000
@@ -166,6 +84,63 @@ export class InvoicesListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  filterByStatus(status: InvoiceStatus | null): void {
+    this.selectedStatus = status;
+    this.applyFilters();
+  }
+
+  onSearch(): void {
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.invoices];
+
+    if (this.selectedStatus) {
+      filtered = filtered.filter(i => i.status === this.selectedStatus);
+    }
+
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(i => 
+        (i.invoiceNumber?.toLowerCase().includes(query)) ||
+        (i.clientName?.toLowerCase().includes(query)) ||
+        (i.client?.companyName?.toLowerCase().includes(query)) ||
+        (i.client?.email?.toLowerCase().includes(query))
+      );
+    }
+
+    this.filteredInvoices = filtered;
+  }
+
+  getInvoicesByStatus(status: InvoiceStatus): Invoice[] {
+    return this.invoices.filter(i => i.status === status);
+  }
+
+  getOverdueInvoices(): Invoice[] {
+    return this.invoices.filter(i => i.status === InvoiceStatus.OVERDUE);
+  }
+
+  getTotalAmount(): number {
+    return this.invoices.reduce((sum, i) => sum + (i.total || 0), 0);
+  }
+
+  isOverdue(invoice: Invoice): boolean {
+    return invoice.status === InvoiceStatus.OVERDUE;
+  }
+
+  getStatusLabel(status: InvoiceStatus): string {
+    const labels: Record<InvoiceStatus, string> = {
+      DRAFT: 'Brouillon',
+      SENT: 'Envoyée',
+      PAID: 'Payée',
+      OVERDUE: 'En retard',
+      CANCELLED: 'Annulée',
+      PARTIALLY_PAID: 'Partiellement payée'
+    };
+    return labels[status] || status;
   }
 
   viewInvoice(invoice: Invoice): void {
@@ -198,7 +173,7 @@ export class InvoicesListComponent implements OnInit {
             });
             this.loadInvoices();
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error deleting invoice:', error);
             this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
               duration: 5000
@@ -209,16 +184,73 @@ export class InvoicesListComponent implements OnInit {
     });
   }
 
-  getStatusColor(status: InvoiceStatus): string {
-    const colors: Record<InvoiceStatus, string> = {
-      [InvoiceStatus.DRAFT]: 'default',
-      [InvoiceStatus.SENT]: 'primary',
-      [InvoiceStatus.PAID]: 'accent',
-      [InvoiceStatus.OVERDUE]: 'warn',
-      [InvoiceStatus.CANCELLED]: 'warn',
-      [InvoiceStatus.PARTIALLY_PAID]: 'primary'
-    };
-    return colors[status] || 'default';
+  downloadPdf(invoice: Invoice): void {
+    if (!invoice.id) return;
+    
+    this.invoiceService.generatePdf(invoice.id).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${invoice.invoiceNumber || 'facture'}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        
+        this.snackBar.open('PDF téléchargé avec succès', 'Fermer', {
+          duration: 3000
+        });
+      },
+      error: (error: any) => {
+        console.error('Error downloading PDF:', error);
+        this.snackBar.open('Erreur lors du téléchargement du PDF', 'Fermer', {
+          duration: 5000
+        });
+      }
+    });
+  }
+
+  sendByEmail(invoice: Invoice): void {
+    if (!invoice.id || !invoice.client?.email) {
+      this.snackBar.open('Email du client manquant', 'Fermer', {
+        duration: 3000
+      });
+      return;
+    }
+    
+    this.invoiceService.sendInvoiceByEmail(invoice.id, invoice.client.email).subscribe({
+      next: () => {
+        this.snackBar.open('Facture envoyée par email avec succès', 'Fermer', {
+          duration: 3000
+        });
+        this.loadInvoices();
+      },
+      error: (error: any) => {
+        console.error('Error sending email:', error);
+        this.snackBar.open('Erreur lors de l\'envoi de l\'email', 'Fermer', {
+          duration: 5000
+        });
+      }
+    });
+  }
+
+  markAsPaid(invoice: Invoice): void {
+    if (!invoice.id) return;
+    
+    const updatedInvoice = { ...invoice, status: InvoiceStatus.PAID, paidDate: new Date().toISOString() };
+    this.invoiceService.update(invoice.id, updatedInvoice).subscribe({
+      next: () => {
+        this.snackBar.open('Facture marquée comme payée', 'Fermer', {
+          duration: 3000
+        });
+        this.loadInvoices();
+      },
+      error: (error: any) => {
+        console.error('Error updating invoice:', error);
+        this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', {
+          duration: 5000
+        });
+      }
+    });
   }
 
   formatCurrency(amount?: number): string {

@@ -1,34 +1,32 @@
 <div class="modern-page-container">
-  <!-- 🎨 Header moderne avec gradient -->
   <div class="page-header">
     <div class="header-content">
       <div class="header-left">
-        <div class="icon-badge quote-badge">
-          <mat-icon>description</mat-icon>
+        <div class="icon-badge invoice-badge">
+          <mat-icon>receipt</mat-icon>
         </div>
         <div class="header-text">
-          <h1 class="page-title">{{ 'devis' | translate | capitalize }}</h1>
-          <p class="page-subtitle">Gérez vos devis et propositions commerciales</p>
+          <h1 class="page-title">{{ 'factures' | translate | capitalize }}</h1>
+          <p class="page-subtitle">Gérez vos factures et paiements</p>
         </div>
       </div>
       <div class="header-actions">
-        <button mat-raised-button class="btn-primary" routerLink="/quotes/new">
+        <button mat-raised-button class="btn-primary" routerLink="/invoices/new">
           <mat-icon>add</mat-icon>
-          <span>{{ 'nouveau devis' | translate | capitalize }}</span>
+          <span>{{ 'nouvelle facture' | translate | capitalize }}</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- 📊 KPI Cards -->
   <div class="kpi-row">
     <div class="kpi-card kpi-primary animate-fade-in" style="animation-delay: 0.1s">
       <div class="kpi-icon">
-        <mat-icon>description</mat-icon>
+        <mat-icon>receipt</mat-icon>
       </div>
       <div class="kpi-content">
-        <div class="kpi-value">{{ quotes.length }}</div>
-        <div class="kpi-label">Devis total</div>
+        <div class="kpi-value">{{ invoices.length }}</div>
+        <div class="kpi-label">Total factures</div>
       </div>
     </div>
 
@@ -37,18 +35,18 @@
         <mat-icon>check_circle</mat-icon>
       </div>
       <div class="kpi-content">
-        <div class="kpi-value">{{ getQuotesByStatus(QuoteStatus.ACCEPTED).length }}</div>
-        <div class="kpi-label">Acceptés</div>
+        <div class="kpi-value">{{ getInvoicesByStatus(InvoiceStatus.PAID).length }}</div>
+        <div class="kpi-label">Payées</div>
       </div>
     </div>
 
-    <div class="kpi-card kpi-warning animate-fade-in" style="animation-delay: 0.3s">
+    <div class="kpi-card kpi-error animate-fade-in" style="animation-delay: 0.3s">
       <div class="kpi-icon">
-        <mat-icon>schedule</mat-icon>
+        <mat-icon>warning</mat-icon>
       </div>
       <div class="kpi-content">
-        <div class="kpi-value">{{ getQuotesByStatus(QuoteStatus.SENT).length }}</div>
-        <div class="kpi-label">En attente</div>
+        <div class="kpi-value">{{ getOverdueInvoices().length }}</div>
+        <div class="kpi-label">En retard</div>
       </div>
     </div>
 
@@ -63,13 +61,12 @@
     </div>
   </div>
 
-  <!-- 🔍 Barre de recherche et filtres -->
   <div class="search-filter-bar animate-fade-in" style="animation-delay: 0.5s">
     <div class="search-box">
       <mat-icon class="search-icon">search</mat-icon>
       <input 
         type="text" 
-        placeholder="Rechercher un devis, client..." 
+        placeholder="Rechercher une facture, client..." 
         class="search-input"
         [(ngModel)]="searchQuery"
         (input)="onSearch()"
@@ -79,19 +76,23 @@
     <div class="filter-group">
       <button mat-button class="filter-btn" [class.active]="selectedStatus === null" (click)="filterByStatus(null)">
         <span>Tous</span>
-        <span class="badge">{{ quotes.length }}</span>
+        <span class="badge">{{ invoices.length }}</span>
       </button>
-      <button mat-button class="filter-btn" [class.active]="selectedStatus === QuoteStatus.DRAFT" (click)="filterByStatus(QuoteStatus.DRAFT)">
+      <button mat-button class="filter-btn" [class.active]="selectedStatus === InvoiceStatus.DRAFT" (click)="filterByStatus(InvoiceStatus.DRAFT)">
         <span>Brouillon</span>
-        <span class="badge badge-gray">{{ getQuotesByStatus(QuoteStatus.DRAFT).length }}</span>
+        <span class="badge badge-gray">{{ getInvoicesByStatus(InvoiceStatus.DRAFT).length }}</span>
       </button>
-      <button mat-button class="filter-btn" [class.active]="selectedStatus === QuoteStatus.SENT" (click)="filterByStatus(QuoteStatus.SENT)">
-        <span>Envoyés</span>
-        <span class="badge badge-warning">{{ getQuotesByStatus(QuoteStatus.SENT).length }}</span>
+      <button mat-button class="filter-btn" [class.active]="selectedStatus === InvoiceStatus.SENT" (click)="filterByStatus(InvoiceStatus.SENT)">
+        <span>Envoyées</span>
+        <span class="badge badge-info">{{ getInvoicesByStatus(InvoiceStatus.SENT).length }}</span>
       </button>
-      <button mat-button class="filter-btn" [class.active]="selectedStatus === QuoteStatus.ACCEPTED" (click)="filterByStatus(QuoteStatus.ACCEPTED)">
-        <span>Acceptés</span>
-        <span class="badge badge-success">{{ getQuotesByStatus(QuoteStatus.ACCEPTED).length }}</span>
+      <button mat-button class="filter-btn" [class.active]="selectedStatus === InvoiceStatus.PAID" (click)="filterByStatus(InvoiceStatus.PAID)">
+        <span>Payées</span>
+        <span class="badge badge-success">{{ getInvoicesByStatus(InvoiceStatus.PAID).length }}</span>
+      </button>
+      <button mat-button class="filter-btn" [class.active]="selectedStatus === InvoiceStatus.OVERDUE" (click)="filterByStatus(InvoiceStatus.OVERDUE)">
+        <span>En retard</span>
+        <span class="badge badge-error">{{ getInvoicesByStatus(InvoiceStatus.OVERDUE).length }}</span>
       </button>
     </div>
 
@@ -105,95 +106,93 @@
     </div>
   </div>
 
-  <!-- 📋 Contenu principal -->
   @if (loading) {
     <div class="loading-state">
       <div class="loading-spinner">
         <mat-spinner diameter="50"></mat-spinner>
       </div>
-      <p class="loading-text">Chargement des devis...</p>
+      <p class="loading-text">Chargement des factures...</p>
     </div>
-  } @else if (filteredQuotes.length === 0) {
+  } @else if (filteredInvoices.length === 0) {
     <div class="empty-state">
       <div class="empty-icon">
-        <mat-icon>description</mat-icon>
+        <mat-icon>receipt</mat-icon>
       </div>
-      <h3 class="empty-title">Aucun devis trouvé</h3>
-      <p class="empty-text">Créez votre premier devis pour commencer</p>
-      <button mat-raised-button color="primary" routerLink="/quotes/new">
+      <h3 class="empty-title">Aucune facture trouvée</h3>
+      <p class="empty-text">Créez votre première facture pour commencer</p>
+      <button mat-raised-button color="primary" routerLink="/invoices/new">
         <mat-icon>add</mat-icon>
-        Créer un devis
+        Créer une facture
       </button>
     </div>
   } @else {
-    <!-- Vue Grille -->
     @if (viewMode === 'grid') {
-      <div class="quotes-grid">
-        @for (quote of filteredQuotes; track quote.id) {
-          <div class="quote-card animate-scale-in" (click)="viewQuote(quote)">
+      <div class="invoices-grid">
+        @for (invoice of filteredInvoices; track invoice.id) {
+          <div class="invoice-card animate-scale-in" (click)="viewInvoice(invoice)">
             <div class="card-header">
-              <div class="card-number">{{ quote.quoteNumber || 'DEV-' + quote.id }}</div>
-              <div class="card-status" [class]="'status-' + quote.status.toLowerCase()">
-                {{ getStatusLabel(quote.status) }}
+              <div class="card-number">{{ invoice.invoiceNumber || 'FACT-' + invoice.id }}</div>
+              <div class="card-status" [class]="'status-' + invoice.status.toLowerCase()">
+                {{ getStatusLabel(invoice.status) }}
               </div>
             </div>
 
             <div class="card-client">
               <div class="client-avatar">
-                <mat-icon>person</mat-icon>
+                <mat-icon>business</mat-icon>
               </div>
               <div class="client-info">
-                <div class="client-name">{{ quote.clientName || quote.client?.companyName || 'Client' }}</div>
-                <div class="client-email">{{ quote.client?.email || '-' }}</div>
+                <div class="client-name">{{ invoice.clientName || invoice.client?.companyName || 'Client' }}</div>
+                <div class="client-email">{{ invoice.client?.email || '-' }}</div>
               </div>
             </div>
 
             <div class="card-details">
               <div class="detail-item">
                 <mat-icon class="detail-icon">calendar_today</mat-icon>
-                <span>{{ quote.date | date:'dd/MM/yyyy' }}</span>
+                <span>{{ invoice.date | date:'dd/MM/yyyy' }}</span>
               </div>
               <div class="detail-item">
-                <mat-icon class="detail-icon">schedule</mat-icon>
-                <span>Validité 30 jours</span>
+                <mat-icon class="detail-icon">event</mat-icon>
+                <span>Échéance: {{ invoice.dueDate | date:'dd/MM/yyyy' }}</span>
               </div>
             </div>
 
             <div class="card-footer">
               <div class="card-amount">
-                <span class="amount-label">Montant HT</span>
-                <span class="amount-value">{{ formatCurrency(quote.total) }}</span>
+                <span class="amount-label">Montant TTC</span>
+                <span class="amount-value">{{ formatCurrency(invoice.total) }}</span>
               </div>
               <div class="card-actions" (click)="$event.stopPropagation()">
                 <button mat-icon-button [matMenuTriggerFor]="menu" class="action-btn">
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                  <button mat-menu-item (click)="viewQuote(quote)">
+                  <button mat-menu-item (click)="viewInvoice(invoice)">
                     <mat-icon>visibility</mat-icon>
                     <span>Voir</span>
                   </button>
-                  <button mat-menu-item (click)="editQuote(quote)">
+                  <button mat-menu-item (click)="editInvoice(invoice)">
                     <mat-icon>edit</mat-icon>
                     <span>Modifier</span>
                   </button>
-                  <button mat-menu-item (click)="downloadPdf(quote)">
+                  <button mat-menu-item (click)="downloadPdf(invoice)">
                     <mat-icon>download</mat-icon>
                     <span>Télécharger PDF</span>
                   </button>
-                  <button mat-menu-item (click)="sendByEmail(quote)">
+                  <button mat-menu-item (click)="sendByEmail(invoice)">
                     <mat-icon>email</mat-icon>
                     <span>Envoyer par email</span>
                   </button>
-                  @if (quote.status === QuoteStatus.ACCEPTED) {
+                  @if (invoice.status !== InvoiceStatus.PAID) {
                     <mat-divider></mat-divider>
-                    <button mat-menu-item (click)="convertToInvoice(quote)">
-                      <mat-icon>receipt</mat-icon>
-                      <span>Convertir en facture</span>
+                    <button mat-menu-item (click)="markAsPaid(invoice)">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>Marquer comme payée</span>
                     </button>
                   }
                   <mat-divider></mat-divider>
-                  <button mat-menu-item (click)="deleteQuote(quote)" class="delete-action">
+                  <button mat-menu-item (click)="deleteInvoice(invoice)" class="delete-action">
                     <mat-icon color="warn">delete</mat-icon>
                     <span>Supprimer</span>
                   </button>
@@ -205,75 +204,74 @@
       </div>
     }
 
-    <!-- Vue Liste -->
     @if (viewMode === 'list') {
-      <div class="quotes-table-container">
+      <div class="invoices-table-container">
         <table class="modern-table">
           <thead>
             <tr>
               <th>Numéro</th>
               <th>Client</th>
               <th>Date</th>
-              <th>Validité</th>
+              <th>Échéance</th>
               <th>Statut</th>
-              <th>Montant HT</th>
+              <th>Montant TTC</th>
               <th class="actions-col">Actions</th>
             </tr>
           </thead>
           <tbody>
-            @for (quote of filteredQuotes; track quote.id) {
-              <tr class="table-row animate-fade-in" (click)="viewQuote(quote)">
+            @for (invoice of filteredInvoices; track invoice.id) {
+              <tr class="table-row animate-fade-in" (click)="viewInvoice(invoice)" [class.overdue]="isOverdue(invoice)">
                 <td>
-                  <span class="quote-number">{{ quote.quoteNumber || 'DEV-' + quote.id }}</span>
+                  <span class="invoice-number">{{ invoice.invoiceNumber || 'FACT-' + invoice.id }}</span>
                 </td>
                 <td>
                   <div class="client-cell">
                     <div class="client-avatar-sm">
-                      <mat-icon>person</mat-icon>
+                      <mat-icon>business</mat-icon>
                     </div>
                     <div>
-                      <div class="client-name-sm">{{ quote.clientName || quote.client?.companyName }}</div>
-                      <div class="client-email-sm">{{ quote.client?.email }}</div>
+                      <div class="client-name-sm">{{ invoice.clientName || invoice.client?.companyName }}</div>
+                      <div class="client-email-sm">{{ invoice.client?.email }}</div>
                     </div>
                   </div>
                 </td>
-                <td>{{ quote.date | date:'dd/MM/yyyy' }}</td>
-                <td>30 jours</td>
+                <td>{{ invoice.date | date:'dd/MM/yyyy' }}</td>
+                <td>{{ invoice.dueDate | date:'dd/MM/yyyy' }}</td>
                 <td>
-                  <span class="status-badge" [class]="'status-' + quote.status.toLowerCase()">
-                    {{ getStatusLabel(quote.status) }}
+                  <span class="status-badge" [class]="'status-' + invoice.status.toLowerCase()">
+                    {{ getStatusLabel(invoice.status) }}
                   </span>
                 </td>
                 <td>
-                  <span class="amount-cell">{{ formatCurrency(quote.total) }}</span>
+                  <span class="amount-cell">{{ formatCurrency(invoice.total) }}</span>
                 </td>
                 <td class="actions-col" (click)="$event.stopPropagation()">
                   <div class="action-buttons">
-                    <button mat-icon-button (click)="viewQuote(quote)" matTooltip="Voir">
+                    <button mat-icon-button (click)="viewInvoice(invoice)" matTooltip="Voir">
                       <mat-icon>visibility</mat-icon>
                     </button>
-                    <button mat-icon-button (click)="editQuote(quote)" matTooltip="Modifier">
+                    <button mat-icon-button (click)="editInvoice(invoice)" matTooltip="Modifier">
                       <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button (click)="downloadPdf(quote)" matTooltip="Télécharger">
+                    <button mat-icon-button (click)="downloadPdf(invoice)" matTooltip="Télécharger">
                       <mat-icon>download</mat-icon>
                     </button>
                     <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Plus d'actions">
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #menu="matMenu">
-                      <button mat-menu-item (click)="sendByEmail(quote)">
+                      <button mat-menu-item (click)="sendByEmail(invoice)">
                         <mat-icon>email</mat-icon>
                         <span>Envoyer par email</span>
                       </button>
-                      @if (quote.status === QuoteStatus.ACCEPTED) {
-                        <button mat-menu-item (click)="convertToInvoice(quote)">
-                          <mat-icon>receipt</mat-icon>
-                          <span>Convertir en facture</span>
+                      @if (invoice.status !== InvoiceStatus.PAID) {
+                        <button mat-menu-item (click)="markAsPaid(invoice)">
+                          <mat-icon>check_circle</mat-icon>
+                          <span>Marquer comme payée</span>
                         </button>
                       }
                       <mat-divider></mat-divider>
-                      <button mat-menu-item (click)="deleteQuote(quote)" class="delete-action">
+                      <button mat-menu-item (click)="deleteInvoice(invoice)" class="delete-action">
                         <mat-icon color="warn">delete</mat-icon>
                         <span>Supprimer</span>
                       </button>
