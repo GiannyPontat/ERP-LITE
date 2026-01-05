@@ -16,33 +16,71 @@
 
     <!-- Contenu principal avec toolbar -->
     <div class="main-wrapper" [class.sidebar-open]="!(isHandset$ | async)">
-      <!-- Toolbar -->
-      <mat-toolbar color="primary" class="toolbar">
-        @if (isHandset$ | async) {
-          <button
-            type="button"
-            aria-label="Toggle navigation"
-            mat-icon-button
-            (click)="toggleSidebar()">
-            <mat-icon>menu</mat-icon>
+      <!-- Modern Toolbar -->
+      <header class="modern-toolbar">
+        <div class="toolbar-left">
+          @if (isHandset$ | async) {
+            <button
+              type="button"
+              aria-label="Toggle navigation"
+              mat-icon-button
+              class="menu-btn"
+              (click)="toggleSidebar()">
+              <mat-icon>menu</mat-icon>
+            </button>
+          }
+          <div class="toolbar-search">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" placeholder="Rechercher..." class="search-input" />
+          </div>
+        </div>
+
+        <div class="toolbar-right">
+          <button mat-icon-button class="toolbar-icon-btn" matTooltip="Notifications">
+            <mat-icon [matBadge]="3" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
           </button>
-        }
-        <span class="toolbar-title">{{ title }}</span>
-        <span class="toolbar-spacer"></span>
-        <button mat-icon-button [matMenuTriggerFor]="menu">
-          <mat-icon>account_circle</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item>
-            <mat-icon>settings</mat-icon>
-            <span>{{ 'parametres' | translate | capitalize }}</span>
+          
+          <button mat-icon-button class="toolbar-icon-btn" matTooltip="Messages">
+            <mat-icon>mail</mat-icon>
           </button>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon>logout</mat-icon>
-            <span>{{ 'deconnexion' | translate | capitalize }}</span>
+
+          <div class="toolbar-divider"></div>
+
+          <button mat-button [matMenuTriggerFor]="menu" class="user-menu-btn">
+            <div class="user-avatar">
+              <span>ME</span>
+            </div>
+            <span class="user-name">Mon Entreprise</span>
+            <mat-icon class="dropdown-icon">expand_more</mat-icon>
           </button>
-        </mat-menu>
-      </mat-toolbar>
+          
+          <mat-menu #menu="matMenu" class="user-menu">
+            <div class="user-menu-header">
+              <div class="user-avatar-large">
+                <span>ME</span>
+              </div>
+              <div class="user-details">
+                <span class="user-name-large">Mon Entreprise</span>
+                <span class="user-email">contact&#64;entreprise.fr</span>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <button mat-menu-item>
+              <mat-icon>person</mat-icon>
+              <span>{{ 'mon profil' | translate | capitalize }}</span>
+            </button>
+            <button mat-menu-item>
+              <mat-icon>settings</mat-icon>
+              <span>{{ 'parametres' | translate | capitalize }}</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()" class="logout-btn">
+              <mat-icon>logout</mat-icon>
+              <span>{{ 'deconnexion' | translate | capitalize }}</span>
+            </button>
+          </mat-menu>
+        </div>
+      </header>
 
       <!-- Contenu -->
       <main class="main-content">

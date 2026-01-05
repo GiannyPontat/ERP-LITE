@@ -76,27 +76,27 @@ export class SidebarComponent {
 
   /**
    * Configuration des sections de menu
-   * Organisées par catégories : Navigation principale, Ventes, Achats, Comptabilité
+   * Optimisé pour les plombiers indépendants
    */
   menuSections: MenuSection[] = [
     // Navigation principale (sans titre de section)
     {
       items: [
         {
-          label: 'tableau de bord',
-          icon: 'assessment',
+          label: 'mon activite',
+          icon: 'dashboard',
           route: '/dashboard',
-          ariaLabel: 'Accéder au tableau de bord'
+          ariaLabel: 'Mon activité'
         },
         {
-          label: 'chantiers',
-          icon: 'construction',
-          route: '/chantiers',
-          ariaLabel: 'Gérer les chantiers'
+          label: 'interventions',
+          icon: 'plumbing',
+          route: '/interventions',
+          ariaLabel: 'Gérer mes interventions'
         }
       ]
     },
-    // Section VENTES
+    // Section VENTES (priorité plombier)
     {
       title: 'ventes',
       items: [
@@ -104,73 +104,49 @@ export class SidebarComponent {
           label: 'devis',
           icon: 'description',
           route: '/quotes',
-          ariaLabel: 'Gérer les devis'
+          ariaLabel: 'Créer et gérer mes devis'
         },
         {
           label: 'factures',
           icon: 'receipt',
           route: '/invoices',
-          ariaLabel: 'Gérer les factures'
+          ariaLabel: 'Gérer mes factures'
         },
         {
           label: 'clients',
           icon: 'people',
           route: '/clients',
-          ariaLabel: 'Gérer les clients'
+          ariaLabel: 'Gérer mes clients'
         },
         {
-          label: 'bibliotheque',
-          icon: 'folder',
-          route: '/bibliotheque',
-          ariaLabel: 'Accéder à la bibliothèque'
+          label: 'mes tarifs',
+          icon: 'euro',
+          route: '/catalog',
+          ariaLabel: 'Mes prestations et tarifs'
         }
       ]
     },
-    // Section ACHATS
+    // Section PLUS (fonctions secondaires)
     {
-      title: 'achats',
+      title: 'plus',
       items: [
         {
-          label: 'factures d achats',
-          icon: 'shopping_cart',
-          route: '/achats/factures',
-          ariaLabel: 'Gérer les factures d\'achats'
-        }
-      ]
-    },
-    // Section COMPTABILITÉ
-    {
-      title: 'comptabilite',
-      items: [
-        {
-          label: 'transactions',
-          icon: 'account_balance',
-          route: '/comptabilite/transactions',
-          ariaLabel: 'Voir les transactions'
-        },
-        {
-          label: 'livre des recettes',
-          icon: 'menu_book',
-          route: '/comptabilite/livre-recettes',
-          ariaLabel: 'Accéder au livre des recettes'
+          label: 'espace client',
+          icon: 'person_outline',
+          route: '/client-portal',
+          ariaLabel: 'Espace client'
         },
         {
           label: 'reglages',
           icon: 'settings',
-          route: '/reglages',
-          ariaLabel: 'Modifier les réglages'
-        },
-        {
-          label: 'parrainage',
-          icon: 'card_giftcard',
-          route: '/parrainage',
-          ariaLabel: 'Programme de parrainage'
+          route: '/settings',
+          ariaLabel: 'Paramètres'
         },
         {
           label: 'besoin d aide',
-          icon: 'help',
-          route: '/aide',
-          ariaLabel: 'Obtenir de l\'aide'
+          icon: 'help_outline',
+          route: '/help',
+          ariaLabel: 'Aide et support'
         }
       ]
     }

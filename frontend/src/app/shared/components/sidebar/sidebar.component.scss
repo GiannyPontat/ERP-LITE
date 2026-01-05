@@ -1,25 +1,20 @@
-@import '../../../../styles/variables';
+@use '../../../../styles/design-system' as *;
 
-// ============================================
-// SIDEBAR CONTAINER
-// ============================================
-
-.sidebar {
-  width: $sidebar-width;
+.modern-sidebar {
+  width: 260px;
   height: 100vh;
-  background-color: $sidebar-bg;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
   display: flex;
   flex-direction: column;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: $z-fixed;
+  z-index: 1000;
+  box-shadow: 2px 0 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s;
   overflow-y: auto;
   overflow-x: hidden;
-  box-shadow: $shadow-md;
-  transition: transform $transition-normal;
 
-  // Scrollbar personnalisée
   &::-webkit-scrollbar {
     width: 4px;
   }
@@ -30,15 +25,14 @@
 
   &::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.1);
-    border-radius: $radius-sm;
+    border-radius: 4px;
 
     &:hover {
       background: rgba(0, 0, 0, 0.15);
     }
   }
 
-  // État mobile fermé
-  @media (max-width: 768px) {
+  @media (max-width: $breakpoint-md) {
     transform: translateX(-100%);
 
     &.sidebar-open {
@@ -47,277 +41,252 @@
   }
 }
 
-// ============================================
-// HEADER (Avatar + Nom entreprise)
-// ============================================
-
 .sidebar-header {
-  display: flex;
-  align-items: center;
-  gap: $space-md;
-  padding: $space-lg;
-  min-height: $sidebar-header-height;
-  border-bottom: 1px solid $border-color;
-  background-color: $bg-primary;
-}
+  padding: 24px;
+  border-bottom: 1px solid #E5E7EB;
 
-.sidebar-avatar {
-  width: $avatar-size;
-  height: $avatar-size;
-  border-radius: $radius-full;
-  background-color: $primary-color;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: $shadow-sm;
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 
-  .avatar-initials {
-    color: $bg-primary;
-    font-size: $font-caption;
-    font-weight: $font-weight-semibold;
-    letter-spacing: 0.5px;
-    user-select: none;
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #4F46E5, #EC4899);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4F46E5, #EC4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .company-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #F3F4F6;
+    border-radius: 12px;
+
+    .company-initials {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #4F46E5, #818CF8);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .company-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 
-.company-info {
+.sidebar-nav {
   flex: 1;
-  overflow: hidden;
+  padding: 16px 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
-  .company-name {
-    display: block;
-    color: $text-primary;
-    font-size: $font-body;
-    font-weight: $font-weight-medium;
-    line-height: 1.4;
+.nav-section {
+  margin-bottom: 24px;
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 8px 16px;
+  }
+
+  .nav-items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: #6B7280;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: linear-gradient(180deg, #4F46E5, #EC4899);
+    border-radius: 0 4px 4px 0;
+    transition: height 0.2s;
+  }
+
+    &:hover {
+      background: #F3F4F6;
+      color: #111827;
+
+      .nav-item-icon mat-icon {
+        color: #6366F1;
+      }
+    }
+
+  &.active {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(236, 72, 153, 0.1));
+    color: #4F46E5;
+    font-weight: 600;
+
+    &::before {
+      height: 24px;
+    }
+
+    .nav-item-icon {
+      background: linear-gradient(135deg, #4F46E5, #EC4899);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+
+      mat-icon {
+        color: white;
+      }
+    }
+  }
+
+  .nav-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: all 0.2s;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #9CA3AF;
+      transition: color 0.2s;
+    }
+  }
+
+  .nav-item-label {
+    flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-}
 
-// ============================================
-// NAVIGATION
-// ============================================
-
-.sidebar-nav {
-  flex: 1;
-  padding: $space-sm 0;
-
-  ::ng-deep {
-    .mat-mdc-list-base {
-      padding: 0;
-    }
+  .nav-item-badge {
+    background: #E0E7FF;
+    color: #4F46E5;
+    border-radius: 9999px;
+    min-width: 24px;
+    height: 20px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
   }
 }
 
-// ============================================
-// SECTIONS DE MENU
-// ============================================
+.sidebar-footer {
+  padding: 16px 12px;
+  border-top: 1px solid #E5E7EB;
 
-.menu-section {
-  margin-bottom: $space-md;
+  .user-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #F3F4F6;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
 
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.section-title {
-  color: $text-hint;
-  font-size: $font-label;
-  font-weight: $font-weight-semibold;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: $space-xs $space-lg;
-  margin: $space-sm 0 $space-xs 0;
-  user-select: none;
-}
-
-// ============================================
-// ITEMS DE MENU
-// ============================================
-
-.menu-item {
-  position: relative;
-  display: flex !important;
-  align-items: center;
-  gap: $space-sm;
-  padding: $space-xs $space-md !important;
-  margin: 0 $space-sm $space-xxs $space-sm !important;
-  min-height: $menu-item-height !important;
-  color: $text-secondary;
-  font-size: $font-body-sm;
-  font-weight: $font-weight-regular;
-  text-decoration: none;
-  border-radius: $radius-md;
-  transition: all $transition-fast;
-  cursor: pointer;
-
-  // Override Material list item styles
-  ::ng-deep {
-    .mdc-list-item__content {
-      display: flex;
-      align-items: center;
-      gap: $space-md;
+    &:hover {
+      background: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
-    .mat-mdc-list-item-unscoped-content {
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #4F46E5, #EC4899);
       display: flex;
       align-items: center;
-      gap: $space-md;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .user-info {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+
+      .user-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-role {
+        font-size: 11px;
+        color: #9CA3AF;
+      }
     }
   }
-
-  // Hover state
-  &:hover:not(.active) {
-    background-color: $sidebar-item-hover-bg;
-    color: $text-primary;
-
-    .menu-icon {
-      color: $text-primary;
-    }
-  }
-
-  // Active state (route active)
-  &.active {
-    background-color: $sidebar-item-active-bg;
-    color: $accent-color;
-    font-weight: $font-weight-medium;
-    box-shadow: 0 2px 6px rgba(124, 77, 255, 0.15);
-
-    .menu-icon {
-      color: $bg-primary;
-    }
-
-    .menu-label {
-      color: $bg-primary;
-    }
-
-    .menu-badge {
-      background-color: rgba(255, 255, 255, 0.2);
-      color: $bg-primary;
-    }
-  }
-
-  // Focus visible pour accessibilité
-  &:focus-visible {
-    outline: 2px solid $primary-color;
-    outline-offset: 2px;
-  }
-}
-
-// ============================================
-// ICÔNES
-// ============================================
-
-.menu-icon {
-  flex-shrink: 0;
-  width: $icon-medium;
-  height: $icon-medium;
-  font-size: $icon-medium;
-  color: $text-secondary;
-  transition: color $transition-fast;
-
-  ::ng-deep {
-    .mat-icon {
-      width: $icon-medium;
-      height: $icon-medium;
-      font-size: $icon-medium;
-    }
-  }
-}
-
-// ============================================
-// LABELS
-// ============================================
-
-.menu-label {
-  flex: 1;
-  color: inherit;
-  font-size: $font-body-sm;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: visible;
-  text-overflow: ellipsis;
-  transition: color $transition-fast;
-}
-
-// ============================================
-// BADGES (Notifications)
-// ============================================
-
-.menu-badge {
-  flex-shrink: 0;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 $space-xs;
-  background-color: $error-color;
-  color: $bg-primary;
-  font-size: $font-label;
-  font-weight: $font-weight-semibold;
-  line-height: 18px;
-  text-align: center;
-  border-radius: $radius-full;
-  transition: all $transition-fast;
-}
-
-// ============================================
-// RIPPLE EFFECT
-// ============================================
-
-::ng-deep {
-  .mat-ripple-element {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-
-  .active .mat-ripple-element {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-}
-
-// ============================================
-// RESPONSIVE
-// ============================================
-
-@media (max-width: 768px) {
-  .sidebar {
-    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
-  }
-
-  .sidebar-header {
-    padding: $space-md;
-  }
-
-  .menu-item {
-    padding: $space-sm $space-md !important;
-  }
-}
-
-@media (min-width: 769px) {
-  .sidebar {
-    // Toujours visible sur desktop
-    transform: translateX(0) !important;
-  }
-}
-
-// ============================================
-// ANIMATIONS
-// ============================================
-
-@keyframes slideIn {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.sidebar-open {
-  animation: slideIn $transition-normal;
 }

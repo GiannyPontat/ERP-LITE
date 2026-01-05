@@ -5,6 +5,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay, filter } from 'rxjs/operators';
@@ -23,6 +26,9 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
+    MatBadgeModule,
+    MatTooltipModule,
+    MatDividerModule,
     TranslateModule,
     CapitalizePipe,
     SidebarComponent

@@ -1,59 +1,68 @@
-<aside class="sidebar" [class.sidebar-open]="isOpen">
-  <!-- Header avec avatar et nom d'entreprise -->
+<aside class="modern-sidebar" [class.sidebar-open]="isOpen">
   <div class="sidebar-header">
-    <div class="sidebar-avatar">
-      <span class="avatar-initials">{{ initials }}</span>
-    </div>
-    <div class="company-info">
-      <span class="company-name">{{ companyName | translate | capitalize }}</span>
+    <div class="logo-container">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="4" width="8" height="8" rx="2" fill="url(#gradient1)"/>
+          <rect x="12" y="12" width="8" height="8" rx="2" fill="url(#gradient2)"/>
+          <defs>
+            <linearGradient id="gradient1" x1="4" y1="4" x2="12" y2="12" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#4F46E5"/>
+              <stop offset="1" stop-color="#818CF8"/>
+            </linearGradient>
+            <linearGradient id="gradient2" x1="12" y1="12" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#EC4899"/>
+              <stop offset="1" stop-color="#F9A8D4"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">ERP-LITE</span>
     </div>
   </div>
 
-  <!-- Navigation principale -->
   <nav class="sidebar-nav" role="navigation" aria-label="Menu principal">
-    <mat-nav-list>
-      <!-- Boucle sur chaque section de menu -->
-      @for (section of menuSections; track section.title || $index) {
-        <div class="menu-section">
-          <!-- Titre de section (si présent) -->
-          @if (section.title) {
-            <h3 class="section-title">
-              {{ section.title | translate | uppercase }}
-            </h3>
-          }
+    @for (section of menuSections; track section.title || $index) {
+      <div class="nav-section">
+        @if (section.title) {
+          <h3 class="section-title">{{ section.title | translate | uppercase }}</h3>
+        }
 
-          <!-- Items de la section -->
+        <div class="nav-items">
           @for (item of section.items; track item.route) {
             <a
-              mat-list-item
               [routerLink]="item.route"
               routerLinkActive="active"
               [routerLinkActiveOptions]="{exact: false}"
-              class="menu-item"
+              class="nav-item"
               [attr.aria-label]="item.ariaLabel"
-              (click)="onItemClick()"
-              matRipple>
-
-              <!-- Icône -->
-              <mat-icon class="menu-icon" matListItemIcon>
-                {{ item.icon }}
-              </mat-icon>
-
-              <!-- Label avec traduction -->
-              <span class="menu-label" matListItemTitle>
-                {{ item.label | translate | capitalize }}
-              </span>
-
-              <!-- Badge optionnel (notifications) -->
+              (click)="onItemClick()">
+              
+              <div class="nav-item-icon">
+                <mat-icon>{{ item.icon }}</mat-icon>
+              </div>
+              
+              <span class="nav-item-label">{{ item.label | translate | capitalize }}</span>
+              
               @if (item.badge && item.badge > 0) {
-                <span class="menu-badge" matListItemMeta>
-                  {{ item.badge }}
-                </span>
+                <span class="nav-item-badge">{{ item.badge }}</span>
               }
             </a>
           }
         </div>
-      }
-    </mat-nav-list>
+      </div>
+    }
   </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">
+        <span>{{ initials }}</span>
+      </div>
+      <div class="user-info">
+        <span class="user-name">{{ companyName | translate | capitalize }}</span>
+        <span class="user-role">Administrateur</span>
+      </div>
+    </div>
+  </div>
 </aside>

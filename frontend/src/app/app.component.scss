@@ -1,8 +1,4 @@
-@import '../styles/variables';
-
-// ============================================
-// CONTAINER PRINCIPAL
-// ============================================
+@use '../styles/design-system' as *;
 
 .app-container {
   width: 100%;
@@ -10,11 +6,8 @@
   overflow: hidden;
   position: relative;
   display: flex;
+  background: $bg-app;
 }
-
-// ============================================
-// BACKDROP (Mobile)
-// ============================================
 
 .sidebar-backdrop {
   position: fixed;
@@ -23,8 +16,8 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: calc(#{$z-fixed} - 10);
-  animation: fadeIn $transition-normal ease-in-out;
+  z-index: 999;
+  animation: fadeIn 0.3s ease-in-out;
 
   @media (min-width: 769px) {
     display: none;
@@ -40,105 +33,272 @@
   }
 }
 
-// ============================================
-// MAIN WRAPPER
-// ============================================
-
 .main-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  transition: margin-left $transition-normal;
+  transition: margin-left 0.3s;
 
-  // Sur desktop avec sidebar ouverte
   &.sidebar-open {
-    margin-left: $sidebar-width;
+    margin-left: 260px;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: $breakpoint-md) {
     margin-left: 0 !important;
   }
 }
 
-// ============================================
-// TOOLBAR
-// ============================================
-
-.toolbar {
+.modern-toolbar {
+  height: 72px;
+  background: white;
+  border-bottom: 1px solid $border-light;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $space-6;
   position: sticky;
   top: 0;
-  z-index: $z-sticky;
-  box-shadow: $shadow-sm;
-  min-height: $toolbar-height;
-  max-height: $toolbar-height;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
-  // Override Material toolbar defaults
-  ::ng-deep {
-    .mat-toolbar {
-      padding: 0 $space-lg;
+  @media (max-width: $breakpoint-md) {
+    height: 64px;
+    padding: 0 $space-4;
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: $space-4;
+    flex: 1;
+
+    .menu-btn {
+      color: $text-secondary;
+
+      &:hover {
+        background: $bg-hover;
+      }
+    }
+
+    .toolbar-search {
+      position: relative;
+      max-width: 400px;
+      flex: 1;
+
+      @media (max-width: $breakpoint-md) {
+        display: none;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: $space-4;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $text-hint;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        pointer-events: none;
+      }
+
+      .search-input {
+        width: 100%;
+        height: 40px;
+        padding: 0 $space-4 0 $space-10;
+        border: 1px solid $border-light;
+        border-radius: $radius-lg;
+        background: $bg-hover;
+        color: $text-primary;
+        font-size: $font-size-sm;
+        transition: all $transition-base;
+
+        &::placeholder {
+          color: $text-hint;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: #6366F1;
+          background: white;
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+      }
+    }
+  }
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+
+    .toolbar-icon-btn {
+      width: 40px;
+      height: 40px;
+      color: $text-secondary;
+      transition: all $transition-base;
+
+      &:hover {
+        background: #F3F4F6;
+        color: #4F46E5;
+      }
+
+      mat-icon {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+      }
+    }
+
+    .toolbar-divider {
+      width: 1px;
+      height: 32px;
+      background: $border-light;
+      margin: 0 $space-2;
+    }
+
+    .user-menu-btn {
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+      padding: $space-2 $space-3;
+      border-radius: $radius-lg;
+      transition: all $transition-base;
+
+      &:hover {
+        background: $bg-hover;
+      }
+
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: $radius-full;
+        background: linear-gradient(135deg, #4F46E5, #EC4899);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-bold;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+      }
+
+      .user-name {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: $text-primary;
+
+        @media (max-width: $breakpoint-md) {
+          display: none;
+        }
+      }
+
+      .dropdown-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: $text-hint;
+      }
     }
   }
 }
 
-.toolbar-title {
-  font-size: $font-title;
-  font-weight: $font-weight-medium;
-  letter-spacing: 0.25px;
-}
+::ng-deep .user-menu {
+  .mat-mdc-menu-content {
+    padding: 0;
+  }
 
-.toolbar-spacer {
-  flex: 1 1 auto;
-}
+  .user-menu-header {
+    padding: $space-5;
+    display: flex;
+    align-items: center;
+    gap: $space-4;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(236, 72, 153, 0.05));
 
-// Compact toolbar icons
-.toolbar ::ng-deep .mat-icon {
-  font-size: $icon-large !important;
-  width: $icon-large !important;
-  height: $icon-large !important;
-}
+    .user-avatar-large {
+      width: 48px;
+      height: 48px;
+      border-radius: $radius-full;
+      background: linear-gradient(135deg, #4F46E5, #EC4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: $font-size-base;
+      font-weight: $font-weight-bold;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      flex-shrink: 0;
+    }
 
-// Compact menu button
-.toolbar ::ng-deep .mat-mdc-icon-button {
-  width: 40px;
-  height: 40px;
-  padding: 8px;
-}
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      gap: $space-1;
 
-// ============================================
-// MAIN CONTENT
-// ============================================
+      .user-name-large {
+        font-size: $font-size-base;
+        font-weight: $font-weight-semibold;
+        color: $text-primary;
+      }
+
+      .user-email {
+        font-size: $font-size-xs;
+        color: $text-hint;
+      }
+    }
+  }
+
+  .mat-mdc-menu-item {
+    min-height: 44px;
+    padding: 0 $space-5;
+
+    mat-icon {
+      margin-right: $space-3;
+      color: $text-hint;
+    }
+
+    &:hover mat-icon {
+      color: #4F46E5;
+    }
+
+    &.logout-btn {
+      color: $color-error;
+
+      mat-icon {
+        color: $color-error;
+      }
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.1);
+      }
+    }
+  }
+}
 
 .main-content {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0;
-  background-color: $bg-secondary;
+  background: $bg-app;
 
-  // Scrollbar personnalisée
   &::-webkit-scrollbar {
     width: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: $bg-secondary;
+    background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: $text-disabled;
+    background: rgba(0, 0, 0, 0.1);
     border-radius: $radius-sm;
 
     &:hover {
-      background: $text-hint;
+      background: rgba(0, 0, 0, 0.15);
     }
   }
 }
-
-// ============================================
-// PUBLIC LAYOUT (Login/Register)
-// ============================================
 
 .public-layout {
   width: 100%;
@@ -146,27 +306,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $bg-secondary;
+  background: $bg-app;
   overflow: auto;
-}
-
-// ============================================
-// RESPONSIVE
-// ============================================
-
-@media (max-width: 768px) {
-  .toolbar {
-    min-height: 56px;
-    max-height: 56px;
-
-    ::ng-deep {
-      .mat-toolbar {
-        padding: 0 $space-md;
-      }
-    }
-  }
-
-  .toolbar-title {
-    font-size: $font-subtitle;
-  }
 }
