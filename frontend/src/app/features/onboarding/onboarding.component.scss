@@ -1,0 +1,372 @@
+.onboarding-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+}
+
+.onboarding-card {
+  max-width: 600px;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+mat-progress-bar {
+  height: 4px;
+}
+
+.onboarding-header {
+  text-align: center;
+  padding: 32px 24px 24px;
+  background: linear-gradient(180deg, #f5f9ff 0%, #ffffff 100%);
+  
+  .step-indicator {
+    margin-bottom: 16px;
+    
+    .step-number {
+      background-color: #e3f2fd;
+      color: #1565c0;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+  }
+  
+  .step-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #1565c0;
+    margin-bottom: 16px;
+  }
+  
+  h1 {
+    margin: 0 0 8px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a237e;
+  }
+  
+  .subtitle {
+    margin: 0;
+    color: #666;
+    font-size: 1rem;
+  }
+}
+
+.onboarding-content {
+  padding: 24px;
+  min-height: 300px;
+}
+
+// Étape 1: Bienvenue
+.welcome-step {
+  .welcome-illustration {
+    text-align: center;
+    margin-bottom: 32px;
+    
+    .big-icon {
+      font-size: 80px;
+      width: 80px;
+      height: 80px;
+      color: #1565c0;
+      background-color: #e3f2fd;
+      padding: 20px;
+      border-radius: 50%;
+    }
+  }
+  
+  .welcome-features {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background-color: #fafafa;
+    border-radius: 12px;
+    
+    mat-icon {
+      color: #1565c0;
+      background-color: #e3f2fd;
+      padding: 8px;
+      border-radius: 8px;
+    }
+    
+    h3 {
+      margin: 0 0 4px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  }
+  
+  .time-estimate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    color: #2e7d32;
+    font-weight: 500;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+// Formulaires
+.form-step {
+  .form-row {
+    display: flex;
+    gap: 16px;
+    
+    mat-form-field {
+      flex: 1;
+    }
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  mat-form-field {
+    margin-bottom: 8px;
+  }
+}
+
+// Étape tarifs
+.rates-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background-color: #fff8e1;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  
+  mat-icon {
+    color: #f57c00;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+  }
+}
+
+.rates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.catalog-hint {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: #e8f5e9;
+  border-radius: 8px;
+  margin-top: 24px;
+  
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: #2e7d32;
+  }
+  
+  strong {
+    display: block;
+    color: #1b5e20;
+  }
+  
+  p {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: #666;
+  }
+}
+
+// Étape premier devis
+.first-quote-step {
+  .quote-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .quote-option {
+    padding: 24px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      border-color: #1565c0;
+      background-color: #f5f9ff;
+    }
+    
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: #1565c0;
+      margin-bottom: 12px;
+    }
+    
+    h3 {
+      margin: 0 0 8px;
+      font-weight: 600;
+    }
+    
+    p {
+      margin: 0 0 16px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    &.secondary {
+      border-style: dashed;
+      
+      mat-icon {
+        color: #757575;
+      }
+    }
+  }
+  
+  .skip-hint {
+    text-align: center;
+    margin-top: 24px;
+    color: #999;
+    font-size: 0.85rem;
+  }
+}
+
+// Étape succès
+.success-step {
+  text-align: center;
+  
+  .success-icon {
+    mat-icon {
+      font-size: 80px;
+      width: 80px;
+      height: 80px;
+      color: #4caf50;
+    }
+  }
+  
+  h2 {
+    margin: 16px 0 8px;
+    color: #1b5e20;
+  }
+  
+  > p {
+    color: #666;
+    margin-bottom: 24px;
+  }
+  
+  .quick-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+  
+  .tips {
+    text-align: left;
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 12px;
+    
+    h4 {
+      margin: 0 0 12px;
+    }
+    
+    ul {
+      margin: 0;
+      padding-left: 20px;
+      
+      li {
+        margin-bottom: 8px;
+        color: #666;
+      }
+    }
+  }
+}
+
+// Actions
+.onboarding-actions {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  
+  .spacer {
+    flex: 1;
+  }
+  
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .onboarding-container {
+    padding: 0;
+    align-items: stretch;
+  }
+  
+  .onboarding-card {
+    border-radius: 0;
+    min-height: 100vh;
+  }
+  
+  .form-step .form-row {
+    flex-direction: column;
+  }
+  
+  .rates-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .success-step .quick-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+

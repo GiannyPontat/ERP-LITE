@@ -1,0 +1,250 @@
+<div class="onboarding-container">
+  <mat-card class="onboarding-card">
+    <!-- Progress bar -->
+    <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+    
+    <!-- Header avec étape courante -->
+    <div class="onboarding-header">
+      <div class="step-indicator">
+        <span class="step-number">{{ currentStep + 1 }}/{{ steps.length }}</span>
+      </div>
+      <mat-icon class="step-icon">{{ steps[currentStep].icon }}</mat-icon>
+      <h1>{{ steps[currentStep].title }}</h1>
+      <p class="subtitle">{{ steps[currentStep].subtitle }}</p>
+    </div>
+
+    <div class="onboarding-content">
+      <!-- ÉTAPE 1: Bienvenue -->
+      @if (currentStep === 0) {
+        <div class="welcome-step">
+          <div class="welcome-illustration">
+            <mat-icon class="big-icon">plumbing</mat-icon>
+          </div>
+          
+          <div class="welcome-features">
+            <div class="feature-item">
+              <mat-icon>schedule</mat-icon>
+              <div>
+                <h3>Devis en 2 minutes</h3>
+                <p>Catalogue de prestations plomberie prêt à l'emploi</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <mat-icon>send</mat-icon>
+              <div>
+                <h3>Envoi instantané</h3>
+                <p>PDF professionnel envoyé par email en 1 clic</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <mat-icon>euro</mat-icon>
+              <div>
+                <h3>Paiement plus rapide</h3>
+                <p>Relances automatiques pour être payé à temps</p>
+              </div>
+            </div>
+          </div>
+          
+          <p class="time-estimate">
+            <mat-icon>timer</mat-icon>
+            Configuration en moins de 2 minutes
+          </p>
+        </div>
+      }
+
+      <!-- ÉTAPE 2: Informations entreprise -->
+      @if (currentStep === 1) {
+        <form [formGroup]="companyForm" class="form-step">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nom de votre entreprise *</mat-label>
+            <input matInput formControlName="companyName" placeholder="Ex: Plomberie Martin">
+            @if (hasError(companyForm, 'companyName', 'required')) {
+              <mat-error>Ce champ est requis</mat-error>
+            }
+          </mat-form-field>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Téléphone *</mat-label>
+              <input matInput formControlName="phone" placeholder="06 12 34 56 78">
+              @if (hasError(companyForm, 'phone', 'required')) {
+                <mat-error>Ce champ est requis</mat-error>
+              }
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Email *</mat-label>
+              <input matInput formControlName="email" placeholder="contact@plomberie.fr">
+              @if (hasError(companyForm, 'email', 'required')) {
+                <mat-error>Ce champ est requis</mat-error>
+              }
+              @if (hasError(companyForm, 'email', 'email')) {
+                <mat-error>Email invalide</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Numéro SIRET (optionnel)</mat-label>
+            <input matInput formControlName="siret" placeholder="12345678901234">
+            <mat-hint>14 chiffres</mat-hint>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Adresse</mat-label>
+            <input matInput formControlName="address" placeholder="12 rue des Artisans">
+          </mat-form-field>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Code postal</mat-label>
+              <input matInput formControlName="postalCode" placeholder="75011">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Ville</mat-label>
+              <input matInput formControlName="city" placeholder="Paris">
+            </mat-form-field>
+          </div>
+        </form>
+      }
+
+      <!-- ÉTAPE 3: Tarifs -->
+      @if (currentStep === 2) {
+        <form [formGroup]="ratesForm" class="form-step">
+          <div class="rates-info">
+            <mat-icon>lightbulb</mat-icon>
+            <p>Ces tarifs seront utilisés par défaut dans vos devis. Vous pourrez les modifier à tout moment.</p>
+          </div>
+          
+          <div class="rates-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Main d'œuvre (€/h)</mat-label>
+              <input matInput type="number" formControlName="hourlyRate">
+              <span matTextSuffix>€/h</span>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Main d'œuvre urgence (€/h)</mat-label>
+              <input matInput type="number" formControlName="urgencyRate">
+              <span matTextSuffix>€/h</span>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Déplacement zone 1 (&lt;15km)</mat-label>
+              <input matInput type="number" formControlName="travelZone1">
+              <span matTextSuffix>€</span>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Déplacement zone 2 (15-30km)</mat-label>
+              <input matInput type="number" formControlName="travelZone2">
+              <span matTextSuffix>€</span>
+            </mat-form-field>
+          </div>
+          
+          <div class="catalog-hint">
+            <mat-icon>inventory_2</mat-icon>
+            <div>
+              <strong>50+ prestations plomberie déjà prêtes</strong>
+              <p>Dépannage, sanitaires, chauffe-eau, robinetterie...</p>
+            </div>
+          </div>
+        </form>
+      }
+
+      <!-- ÉTAPE 4: Premier devis -->
+      @if (currentStep === 3) {
+        <div class="first-quote-step">
+          <div class="quote-options">
+            <div class="quote-option" (click)="goToCreateQuote()">
+              <mat-icon>add_circle</mat-icon>
+              <h3>Créer mon premier devis</h3>
+              <p>Utilisez un modèle ou partez de zéro</p>
+              <button mat-raised-button color="primary">
+                Créer un devis
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+            
+            <div class="quote-option secondary" (click)="goToCatalog()">
+              <mat-icon>euro</mat-icon>
+              <h3>Personnaliser mes tarifs</h3>
+              <p>Ajustez les prix et ajoutez vos prestations</p>
+              <button mat-stroked-button>
+                Voir mes tarifs
+              </button>
+            </div>
+          </div>
+          
+          <p class="skip-hint">
+            Vous pourrez toujours faire ça plus tard depuis le menu.
+          </p>
+        </div>
+      }
+
+      <!-- ÉTAPE 5: Terminé -->
+      @if (currentStep === 4) {
+        <div class="success-step">
+          <div class="success-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          
+          <h2>Votre espace est prêt !</h2>
+          <p>Vous pouvez maintenant créer vos devis et factures en quelques clics.</p>
+          
+          <div class="quick-actions">
+            <button mat-raised-button color="primary" (click)="goToCreateQuote()">
+              <mat-icon>add</mat-icon>
+              Créer un devis
+            </button>
+            <button mat-stroked-button (click)="goToDashboard()">
+              <mat-icon>dashboard</mat-icon>
+              Voir mon activité
+            </button>
+          </div>
+          
+          <div class="tips">
+            <h4>💡 Astuces pour bien démarrer</h4>
+            <ul>
+              <li>Ajoutez vos clients réguliers pour gagner du temps</li>
+              <li>Personnalisez vos tarifs dans "Mes tarifs"</li>
+              <li>Utilisez les modèles de devis pour aller plus vite</li>
+            </ul>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Navigation -->
+    <div class="onboarding-actions">
+      @if (currentStep > 0 && currentStep < 4) {
+        <button mat-button (click)="prevStep()">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+      }
+      
+      @if (currentStep === 0) {
+        <button mat-button (click)="skipOnboarding()">Passer</button>
+      }
+      
+      <span class="spacer"></span>
+      
+      @if (currentStep < 3) {
+        <button mat-raised-button color="primary" (click)="nextStep()">
+          Continuer
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      }
+      
+      @if (currentStep === 3) {
+        <button mat-button (click)="nextStep()">
+          Passer cette étape
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      }
+    </div>
+  </mat-card>
+</div>
+
