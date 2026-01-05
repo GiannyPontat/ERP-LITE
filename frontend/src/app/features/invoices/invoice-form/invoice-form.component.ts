@@ -242,8 +242,8 @@ export class InvoiceFormComponent implements OnInit {
         }
       });
     } else if (this.quoteId) {
-      this.invoiceService.createFromQuote(this.quoteId, invoice).subscribe({
-        next: (createdInvoice) => {
+      this.invoiceService.createFromQuote(this.quoteId).subscribe({
+        next: (createdInvoice: any) => {
           this.snackBar.open('Facture créée depuis le devis avec succès', 'Fermer', {
             duration: 3000
           });

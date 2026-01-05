@@ -26,6 +26,13 @@ export class ClientService {
     return this.http.get<Page<Client>>(this.apiUrl, { params });
   }
 
+  /**
+   * Récupère tous les clients sans pagination (pour les selects)
+   */
+  getAllSimple(): Observable<Client[]> {
+    return this.http.get<Client[]>(`${this.apiUrl}/all`);
+  }
+
   getById(id: number): Observable<Client> {
     return this.http.get<Client>(`${this.apiUrl}/${id}`);
   }
@@ -41,5 +48,40 @@ export class ClientService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-}
 
+  /**
+   * Recherche avancée de clients
+   */
+  search(criteria: {
+    name?: string;
+    email?: string;
+    city?: string;
+    page?: number;
+    size?: number;
+  }): Observable<Page<Client>> {
+    let params = new HttpParams()
+      .set('page', (criteria.page || 0).toString())
+      .set('size', (criteria.size || 20).toString())
+      .set('sort', 'id,desc');
+
+    if (criteria.name) params = params.set('name', criteria.name);
+    if (criteria.email) params = params.set('email', criteria.email);
+    if (criteria.city) params = params.set('city', criteria.city);
+
+    return this.http.get<Page<Client>>(this.apiUrl, { params });
+  }
+
+  /**
+   * Récupère l'historique d'un client (factures, devis, interventions)
+   */
+  getHistory(clientId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${clientId}/history`);
+  }
+
+  /**
+   * Récupère les statistiques d'un client
+   */
+  getStats(clientId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${clientId}/stats`);
+  }
+}

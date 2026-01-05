@@ -31,4 +31,3 @@ export class DashboardService {
     return this.http.get<TopClient[]>(`${this.apiUrl}/top-clients`);
   }
 }
-
