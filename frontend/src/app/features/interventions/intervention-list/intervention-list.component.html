@@ -1,0 +1,257 @@
+<div class="modern-page-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="icon-badge intervention-badge">
+          <mat-icon>build</mat-icon>
+        </div>
+        <div class="header-text">
+          <h1 class="page-title">Mes interventions</h1>
+          <p class="page-subtitle">Gérez vos interventions et suivez leur avancement</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button mat-raised-button class="btn-primary" routerLink="/interventions/new">
+          <mat-icon>add</mat-icon>
+          <span>Nouvelle intervention</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card kpi-primary animate-fade-in" style="animation-delay: 0.1s">
+      <div class="kpi-icon">
+        <mat-icon>build</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ interventions.length }}</div>
+        <div class="kpi-label">Total</div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-error animate-fade-in" style="animation-delay: 0.2s">
+      <div class="kpi-icon">
+        <mat-icon>warning</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ statusCounts[InterventionStatus.URGENT] || 0 }}</div>
+        <div class="kpi-label">Urgentes</div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-warning animate-fade-in" style="animation-delay: 0.3s">
+      <div class="kpi-icon">
+        <mat-icon>engineering</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ statusCounts[InterventionStatus.IN_PROGRESS] || 0 }}</div>
+        <div class="kpi-label">En cours</div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-success animate-fade-in" style="animation-delay: 0.4s">
+      <div class="kpi-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ statusCounts[InterventionStatus.COMPLETED] || 0 }}</div>
+        <div class="kpi-label">Terminées</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-filter-bar animate-fade-in" style="animation-delay: 0.5s">
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input 
+        type="text" 
+        placeholder="Rechercher client, adresse..." 
+        class="search-input"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+      />
+    </div>
+
+    <div class="filter-group">
+      <button mat-button class="filter-btn" [class.active]="selectedStatus === 'ALL'" (click)="selectedStatus = 'ALL'; applyFilters()">
+        <span>Toutes</span>
+        <span class="badge">{{ interventions.length }}</span>
+      </button>
+      @for (status of statusList; track status) {
+        <button mat-button class="filter-btn" [class.active]="selectedStatus === status" (click)="selectedStatus = status; applyFilters()">
+          <mat-icon>{{ STATUS_COLORS[status].icon }}</mat-icon>
+          <span>{{ STATUS_LABELS[status] }}</span>
+          <span class="badge" [class]="'badge-' + status.toLowerCase()">{{ statusCounts[status] || 0 }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="view-toggle">
+      <button mat-icon-button [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'" matTooltip="Vue grille">
+        <mat-icon>grid_view</mat-icon>
+      </button>
+      <button mat-icon-button [class.active]="viewMode === 'list'" (click)="viewMode = 'list'" matTooltip="Vue liste">
+        <mat-icon>view_list</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="loading-spinner">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+      <p class="loading-text">Chargement des interventions...</p>
+    </div>
+  } @else if (filteredInterventions.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <mat-icon>build</mat-icon>
+      </div>
+      <h3 class="empty-title">Aucune intervention trouvée</h3>
+      <p class="empty-text">Créez votre première intervention pour commencer</p>
+      <button mat-raised-button color="primary" routerLink="/interventions/new">
+        <mat-icon>add</mat-icon>
+        Créer une intervention
+      </button>
+    </div>
+  } @else {
+    @if (viewMode === 'grid') {
+      <div class="interventions-grid">
+        @for (intervention of filteredInterventions; track intervention.id) {
+          <div class="intervention-card animate-scale-in" (click)="viewIntervention(intervention)">
+            <div class="card-header">
+              <div class="card-type" [style.background]="STATUS_COLORS[intervention.status].bg" [style.color]="STATUS_COLORS[intervention.status].text">
+                <mat-icon>{{ TYPE_ICONS[intervention.type] }}</mat-icon>
+                <span>{{ TYPE_LABELS[intervention.type] }}</span>
+              </div>
+              <div class="card-status" [style.background]="STATUS_COLORS[intervention.status].bg" [style.color]="STATUS_COLORS[intervention.status].text">
+                <mat-icon>{{ STATUS_COLORS[intervention.status].icon }}</mat-icon>
+                <span>{{ STATUS_LABELS[intervention.status] }}</span>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <h3 class="intervention-title">{{ intervention.title }}</h3>
+              <p class="intervention-client">{{ intervention.clientName }}</p>
+
+              <div class="card-details">
+                <div class="detail-item">
+                  <mat-icon class="detail-icon">location_on</mat-icon>
+                  <span>{{ intervention.clientAddress || 'Adresse non renseignée' }}</span>
+                </div>
+                <div class="detail-item">
+                  <mat-icon class="detail-icon">event</mat-icon>
+                  <span>{{ intervention.scheduledDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                @if (intervention.estimatedDuration) {
+                  <div class="detail-item">
+                    <mat-icon class="detail-icon">schedule</mat-icon>
+                    <span>{{ intervention.estimatedDuration }} min</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <div class="card-actions" (click)="$event.stopPropagation()">
+                <button mat-icon-button [matMenuTriggerFor]="menu" class="action-btn">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="viewIntervention(intervention)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Voir</span>
+                  </button>
+                  <button mat-menu-item (click)="editIntervention(intervention)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Modifier</span>
+                  </button>
+                  @if (intervention.status === InterventionStatus.COMPLETED) {
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="createInvoice(intervention)">
+                      <mat-icon>receipt</mat-icon>
+                      <span>Créer facture</span>
+                    </button>
+                  }
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="deleteIntervention(intervention)" class="delete-action">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span>Supprimer</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (viewMode === 'list') {
+      <div class="interventions-table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Titre</th>
+              <th>Client</th>
+              <th>Date</th>
+              <th>Statut</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (intervention of filteredInterventions; track intervention.id) {
+              <tr class="table-row animate-fade-in" (click)="viewIntervention(intervention)">
+                <td>
+                  <div class="type-badge" [style.background]="STATUS_COLORS[intervention.status].bg" [style.color]="STATUS_COLORS[intervention.status].text">
+                    <mat-icon>{{ TYPE_ICONS[intervention.type] }}</mat-icon>
+                    <span>{{ TYPE_LABELS[intervention.type] }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="intervention-title-cell">{{ intervention.title }}</span>
+                </td>
+                <td>{{ intervention.clientName }}</td>
+                <td>{{ intervention.scheduledDate | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <span class="status-badge" [style.background]="STATUS_COLORS[intervention.status].bg" [style.color]="STATUS_COLORS[intervention.status].text">
+                    <mat-icon>{{ STATUS_COLORS[intervention.status].icon }}</mat-icon>
+                    {{ STATUS_LABELS[intervention.status] }}
+                  </span>
+                </td>
+                <td class="actions-col" (click)="$event.stopPropagation()">
+                  <div class="action-buttons">
+                    <button mat-icon-button (click)="viewIntervention(intervention)" matTooltip="Voir">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="editIntervention(intervention)" matTooltip="Modifier">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Plus d'actions">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                      @if (intervention.status === InterventionStatus.COMPLETED) {
+                        <button mat-menu-item (click)="createInvoice(intervention)">
+                          <mat-icon>receipt</mat-icon>
+                          <span>Créer facture</span>
+                        </button>
+                        <mat-divider></mat-divider>
+                      }
+                      <button mat-menu-item (click)="deleteIntervention(intervention)" class="delete-action">
+                        <mat-icon color="warn">delete</mat-icon>
+                        <span>Supprimer</span>
+                      </button>
+                    </mat-menu>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>
