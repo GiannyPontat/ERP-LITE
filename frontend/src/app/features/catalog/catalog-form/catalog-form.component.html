@@ -1,0 +1,198 @@
+<div class="catalog-form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+        {{ isEditMode ? 'Modifier l\'article' : 'Nouvel article' }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <!-- Informations principales -->
+          <div class="form-section">
+            <h3>
+              <mat-icon>info</mat-icon>
+              Informations principales
+            </h3>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="field-reference">
+                <mat-label>Référence *</mat-label>
+                <input matInput formControlName="reference" placeholder="EX: ELEC-001">
+                <mat-hint>Code unique de l'article</mat-hint>
+                @if (hasError('reference', 'required')) {
+                  <mat-error>La référence est requise</mat-error>
+                }
+                @if (hasError('reference', 'maxlength')) {
+                  <mat-error>50 caractères maximum</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="field-category">
+                <mat-label>Catégorie *</mat-label>
+                <mat-select formControlName="category">
+                  @for (category of categories; track category) {
+                    <mat-option [value]="category">{{ getCategoryLabel(category) }}</mat-option>
+                  }
+                </mat-select>
+                @if (hasError('category', 'required')) {
+                  <mat-error>La catégorie est requise</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Désignation *</mat-label>
+              <input matInput formControlName="name" placeholder="Nom de l'article">
+              @if (hasError('name', 'required')) {
+                <mat-error>Le nom de l'article est requis</mat-error>
+              }
+              @if (hasError('name', 'maxlength')) {
+                <mat-error>500 caractères maximum</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" rows="3" placeholder="Description détaillée..."></textarea>
+              @if (hasError('description', 'maxlength')) {
+                <mat-error>5000 caractères maximum</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Tarification -->
+          <div class="form-section">
+            <h3>
+              <mat-icon>euro</mat-icon>
+              Tarification
+            </h3>
+
+            <div class="form-row pricing-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Unité *</mat-label>
+                <mat-select formControlName="unit">
+                  @for (unit of units; track unit) {
+                    <mat-option [value]="unit">{{ unit }}</mat-option>
+                  }
+                </mat-select>
+                @if (hasError('unit', 'required')) {
+                  <mat-error>L'unité est requise</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Prix de vente HT *</mat-label>
+                <input matInput type="number" step="0.01" formControlName="unitPrice">
+                <span matTextSuffix>€</span>
+                @if (hasError('unitPrice', 'required')) {
+                  <mat-error>Le prix est requis</mat-error>
+                }
+                @if (hasError('unitPrice', 'min')) {
+                  <mat-error>Le prix doit être positif</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>TVA</mat-label>
+                <input matInput type="number" step="0.1" formControlName="taxRate">
+                <span matTextSuffix>%</span>
+                @if (hasError('taxRate', 'min') || hasError('taxRate', 'max')) {
+                  <mat-error>Entre 0 et 100%</mat-error>
+                }
+              </mat-form-field>
+
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Stock -->
+          <div class="form-section">
+            <h3>
+              <mat-icon>inventory_2</mat-icon>
+              Gestion du stock
+            </h3>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Stock actuel</mat-label>
+                <input matInput type="number" formControlName="stock">
+                <mat-hint>Quantité en stock</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Stock minimum</mat-label>
+                <input matInput type="number" formControlName="minStock">
+                <mat-hint>Alerte si stock inférieur</mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Fournisseur -->
+          <div class="form-section">
+            <h3>
+              <mat-icon>business</mat-icon>
+              Fournisseur
+            </h3>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Fournisseur</mat-label>
+                <input matInput formControlName="supplier">
+              </mat-form-field>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Notes et statut -->
+          <div class="form-section">
+            <h3>
+              <mat-icon>note</mat-icon>
+              Notes et statut
+            </h3>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Notes internes</mat-label>
+              <textarea matInput formControlName="notes" rows="3" placeholder="Notes internes..."></textarea>
+            </mat-form-field>
+
+            <mat-slide-toggle formControlName="isActive" color="primary">
+              Article actif (visible dans les devis)
+            </mat-slide-toggle>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions">
+            <button mat-button type="button" routerLink="/catalog">
+              <mat-icon>arrow_back</mat-icon>
+              Annuler
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="saving">
+              @if (saving) {
+                <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+                <ng-container>
+                  <mat-icon>save</mat-icon>
+                  {{ isEditMode ? 'Enregistrer' : 'Créer l\'article' }}
+                </ng-container>
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
+

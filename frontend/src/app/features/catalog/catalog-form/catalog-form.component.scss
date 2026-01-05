@@ -1,0 +1,201 @@
+.catalog-form-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+mat-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+mat-card-header {
+  margin-bottom: 24px;
+  padding: 16px 16px 0;
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a237e;
+    margin: 0;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+mat-card-content {
+  padding: 0 16px 16px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+}
+
+.form-section {
+  padding: 24px 0;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #424242;
+    margin: 0 0 20px 0;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #1565c0;
+    }
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .field-reference {
+    flex: 0 0 180px;
+  }
+
+  .field-category {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+.pricing-row {
+  mat-form-field {
+    flex: 1;
+    min-width: 150px;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-divider {
+  margin: 8px 0;
+}
+
+.margin-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-weight: 500;
+
+  &.positive {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+
+    mat-icon {
+      color: #4caf50;
+    }
+  }
+
+  &.negative {
+    background-color: #ffebee;
+    color: #c62828;
+
+    mat-icon {
+      color: #f44336;
+    }
+  }
+
+  .margin-label {
+    color: #616161;
+  }
+
+  .margin-amount {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .margin-percent {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+}
+
+mat-slide-toggle {
+  margin-top: 8px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 24px;
+  margin-top: 16px;
+  border-top: 1px solid #e0e0e0;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-spinner {
+      margin-right: 8px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .catalog-form-container {
+    padding: 16px;
+  }
+
+  .form-row {
+    flex-direction: column;
+
+    mat-form-field {
+      min-width: unset;
+    }
+
+    .field-reference,
+    .field-category {
+      flex: unset;
+    }
+  }
+
+  .pricing-row {
+    mat-form-field {
+      min-width: unset;
+    }
+  }
+
+  .margin-display {
+    flex-wrap: wrap;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+

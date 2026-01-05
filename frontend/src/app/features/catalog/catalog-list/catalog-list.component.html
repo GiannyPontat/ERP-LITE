@@ -1,0 +1,267 @@
+<div class="modern-page-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="icon-badge catalog-badge">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div class="header-text">
+          <h1 class="page-title">Mes Tarifs</h1>
+          <p class="page-subtitle">Gérez votre catalogue de produits et services</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button mat-raised-button class="btn-primary" routerLink="/catalog/new">
+          <mat-icon>add</mat-icon>
+          <span>Nouvel article</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card kpi-primary animate-fade-in" style="animation-delay: 0.1s">
+      <div class="kpi-icon">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ totalElements }}</div>
+        <div class="kpi-label">Total articles</div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-success animate-fade-in" style="animation-delay: 0.2s">
+      <div class="kpi-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ getActiveItems() }}</div>
+        <div class="kpi-label">Actifs</div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-warning animate-fade-in" style="animation-delay: 0.3s">
+      <div class="kpi-icon">
+        <mat-icon>warning</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ getLowStockItems() }}</div>
+        <div class="kpi-label">Stock bas</div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-info animate-fade-in" style="animation-delay: 0.4s">
+      <div class="kpi-icon">
+        <mat-icon>category</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ getUniqueCategories() }}</div>
+        <div class="kpi-label">Catégories</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-filter-bar animate-fade-in" style="animation-delay: 0.5s">
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input 
+        type="text" 
+        placeholder="Rechercher un article..." 
+        class="search-input"
+        [value]="searchQuery"
+        (input)="onSearch($event)"
+      />
+    </div>
+
+    <div class="filter-group">
+      <button mat-button class="filter-btn" [class.active]="selectedCategory === null" (click)="filterByCategory(null)">
+        <span>Tous</span>
+        <span class="badge">{{ totalElements }}</span>
+      </button>
+      @for (category of categories; track category) {
+        <button mat-button class="filter-btn" [class.active]="selectedCategory === category" (click)="filterByCategory(category)">
+          <span>{{ getCategoryLabel(category) }}</span>
+          <span class="badge">{{ getItemsByCategory(category).length }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="view-toggle">
+      <button mat-icon-button [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'" matTooltip="Vue grille">
+        <mat-icon>grid_view</mat-icon>
+      </button>
+      <button mat-icon-button [class.active]="viewMode === 'list'" (click)="viewMode = 'list'" matTooltip="Vue liste">
+        <mat-icon>view_list</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="loading-spinner">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+      <p class="loading-text">Chargement du catalogue...</p>
+    </div>
+  } @else if (items.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+      <h3 class="empty-title">Aucun article trouvé</h3>
+      <p class="empty-text">Créez votre premier article pour commencer</p>
+      <button mat-raised-button color="primary" routerLink="/catalog/new">
+        <mat-icon>add</mat-icon>
+        Créer un article
+      </button>
+    </div>
+  } @else {
+    @if (viewMode === 'grid') {
+      <div class="catalog-grid">
+        @for (item of items; track item.id) {
+          <div class="catalog-card animate-scale-in" (click)="viewItem(item)">
+            <div class="card-header">
+              <div class="card-reference">{{ item.reference }}</div>
+              <div class="card-status" [class.active]="item.isActive" [class.inactive]="!item.isActive">
+                {{ item.isActive ? 'Actif' : 'Inactif' }}
+              </div>
+            </div>
+
+            <div class="card-body">
+              <h3 class="item-name">{{ item.name }}</h3>
+              <p class="item-category">{{ getCategoryLabel(item.category) }}</p>
+
+              <div class="card-details">
+                <div class="detail-item">
+                  <mat-icon class="detail-icon">euro</mat-icon>
+                  <span>{{ formatCurrency(item.unitPrice) }} / {{ item.unit }}</span>
+                </div>
+                @if (item.stock !== undefined && item.stock !== null) {
+                  <div class="detail-item" [class.low-stock]="isLowStock(item)">
+                    <mat-icon class="detail-icon">inventory</mat-icon>
+                    <span>Stock: {{ item.stock }}</span>
+                  </div>
+                }
+                @if (item.supplier) {
+                  <div class="detail-item">
+                    <mat-icon class="detail-icon">business</mat-icon>
+                    <span>{{ item.supplier }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <div class="card-actions" (click)="$event.stopPropagation()">
+                <button mat-icon-button [matMenuTriggerFor]="menu" class="action-btn">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="viewItem(item)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Voir</span>
+                  </button>
+                  <button mat-menu-item (click)="editItem(item)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Modifier</span>
+                  </button>
+                  <button mat-menu-item (click)="toggleActive(item)">
+                    <mat-icon>{{ item.isActive ? 'block' : 'check_circle' }}</mat-icon>
+                    <span>{{ item.isActive ? 'Désactiver' : 'Activer' }}</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="deleteItem(item)" class="delete-action">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span>Supprimer</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (viewMode === 'list') {
+      <div class="catalog-table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Nom</th>
+              <th>Catégorie</th>
+              <th>Prix unitaire</th>
+              <th>Stock</th>
+              <th>Statut</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of items; track item.id) {
+              <tr class="table-row animate-fade-in" (click)="viewItem(item)" [class.low-stock]="isLowStock(item)">
+                <td>
+                  <span class="item-reference">{{ item.reference }}</span>
+                </td>
+                <td>
+                  <div class="item-name-cell">{{ item.name }}</div>
+                </td>
+                <td>{{ getCategoryLabel(item.category) }}</td>
+                <td>
+                  <span class="price-cell">{{ formatCurrency(item.unitPrice) }}</span>
+                  <span class="unit-cell">/ {{ item.unit }}</span>
+                </td>
+                <td>
+                  @if (item.stock !== undefined && item.stock !== null) {
+                    <span [class.low-stock-text]="isLowStock(item)">{{ item.stock }}</span>
+                  } @else {
+                    <span>-</span>
+                  }
+                </td>
+                <td>
+                  <span class="status-badge" [class.active]="item.isActive" [class.inactive]="!item.isActive">
+                    {{ item.isActive ? 'Actif' : 'Inactif' }}
+                  </span>
+                </td>
+                <td class="actions-col" (click)="$event.stopPropagation()">
+                  <div class="action-buttons">
+                    <button mat-icon-button (click)="viewItem(item)" matTooltip="Voir">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="editItem(item)" matTooltip="Modifier">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Plus d'actions">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                      <button mat-menu-item (click)="toggleActive(item)">
+                        <mat-icon>{{ item.isActive ? 'block' : 'check_circle' }}</mat-icon>
+                        <span>{{ item.isActive ? 'Désactiver' : 'Activer' }}</span>
+                      </button>
+                      <mat-divider></mat-divider>
+                      <button mat-menu-item (click)="deleteItem(item)" class="delete-action">
+                        <mat-icon color="warn">delete</mat-icon>
+                        <span>Supprimer</span>
+                      </button>
+                    </mat-menu>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (totalElements > pageSize) {
+      <mat-paginator
+        [length]="totalElements"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[10, 20, 50, 100]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  }
+</div>

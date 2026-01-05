@@ -1,0 +1,162 @@
+<div class="catalog-detail-container">
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  } @else if (item) {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <span class="reference-badge">{{ item.reference }}</span>
+          {{ item.name }}
+        </mat-card-title>
+        <div class="header-actions">
+          <button mat-button routerLink="/catalog">
+            <mat-icon>arrow_back</mat-icon>
+            Retour
+          </button>
+          <button mat-icon-button [matMenuTriggerFor]="actionsMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #actionsMenu="matMenu">
+            <a mat-menu-item [routerLink]="['/catalog', item.id, 'edit']">
+              <mat-icon>edit</mat-icon>
+              <span>Modifier</span>
+            </a>
+            <button mat-menu-item (click)="toggleActive()">
+              <mat-icon>{{ item.isActive ? 'block' : 'check_circle' }}</mat-icon>
+              <span>{{ item.isActive ? 'Désactiver' : 'Activer' }}</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="deleteItem()" class="delete-action">
+              <mat-icon color="warn">delete</mat-icon>
+              <span>Supprimer</span>
+            </button>
+          </mat-menu>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Status badge -->
+        <div class="status-row">
+          <mat-chip-set>
+            <mat-chip [class.active-chip]="item.isActive" [class.inactive-chip]="!item.isActive">
+              <mat-icon>{{ item.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
+              {{ item.isActive ? 'Actif' : 'Inactif' }}
+            </mat-chip>
+            <mat-chip class="category-chip">
+              {{ getCategoryLabel(item.category) }}
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+
+        <!-- Description -->
+        @if (item.description) {
+          <div class="section description-section">
+            <p>{{ item.description }}</p>
+          </div>
+        }
+
+        <mat-divider></mat-divider>
+
+        <!-- Tarification -->
+        <div class="section">
+          <h3>
+            <mat-icon>euro</mat-icon>
+            Tarification
+          </h3>
+          <div class="info-grid pricing-grid">
+            <div class="info-item highlight">
+              <span class="label">Prix de vente HT</span>
+              <span class="value price">{{ formatCurrency(item.unitPrice) }}</span>
+              <span class="unit">/ {{ item.unit }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">TVA</span>
+              <span class="value">{{ formatPercent(item.taxRate) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Stock -->
+        @if (item.stock !== undefined || item.minStock !== undefined) {
+          <div class="section">
+            <h3>
+              <mat-icon>inventory_2</mat-icon>
+              Stock
+            </h3>
+            <div class="info-grid">
+              @if (item.stock !== undefined) {
+                <div class="info-item">
+                  <span class="label">Stock actuel</span>
+                  <span class="value">{{ item.stock }}</span>
+                </div>
+              }
+              @if (item.minStock !== undefined) {
+                <div class="info-item">
+                  <span class="label">Stock minimum</span>
+                  <span class="value">{{ item.minStock }}</span>
+                </div>
+              }
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+        }
+
+        <!-- Fournisseur -->
+        @if (item.supplier) {
+          <div class="section">
+            <h3>
+              <mat-icon>business</mat-icon>
+              Fournisseur
+            </h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Fournisseur</span>
+                <span class="value">{{ item.supplier }}</span>
+              </div>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+        }
+
+        <!-- Notes -->
+        @if (item.notes) {
+          <div class="section">
+            <h3>
+              <mat-icon>note</mat-icon>
+              Notes internes
+            </h3>
+            <p class="notes-content">{{ item.notes }}</p>
+          </div>
+          <mat-divider></mat-divider>
+        }
+
+        <!-- Métadonnées -->
+        <div class="section metadata">
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Créé le</span>
+              <span class="value">{{ formatDate(item.createdAt) }}</span>
+            </div>
+            @if (item.updatedAt) {
+              <div class="info-item">
+                <span class="label">Modifié le</span>
+                <span class="value">{{ formatDate(item.updatedAt) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" [routerLink]="['/catalog', item.id, 'edit']">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</div>
