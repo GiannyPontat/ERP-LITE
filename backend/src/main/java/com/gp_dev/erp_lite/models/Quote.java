@@ -29,6 +29,10 @@ public class Quote {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
     @Column(name = "date", nullable = false)
     private LocalDate date;
 

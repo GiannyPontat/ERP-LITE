@@ -33,6 +33,10 @@ public class Invoice {
     @JoinColumn(name = "quote_id")
     private Quote quote; // Si conversion depuis un devis
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
