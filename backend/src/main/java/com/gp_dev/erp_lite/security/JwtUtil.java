@@ -71,6 +71,32 @@ public class JwtUtil {
         return createToken(claims, email, refreshTokenExpiration);
     }
 
+    /**
+     * Generate a JWT token for client portal access
+     */
+    public String generateClientPortalToken(String email, Long clientId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("clientId", clientId);
+        claims.put("type", "CLIENT_PORTAL");
+        return createToken(claims, email, accessTokenExpiration * 96); // 24h if access is 15min
+    }
+
+    /**
+     * Extract client ID from client portal token
+     */
+    public Long extractClientId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("clientId", Long.class);
+    }
+
+    /**
+     * Check if token is a client portal token
+     */
+    public boolean isClientPortalToken(String token) {
+        Claims claims = extractAllClaims(token);
+        return "CLIENT_PORTAL".equals(claims.get("type"));
+    }
+
     private String createToken(Map<String, Object> claims, String subject, Long expiration) {
         return Jwts.builder()
                 .claims(claims)

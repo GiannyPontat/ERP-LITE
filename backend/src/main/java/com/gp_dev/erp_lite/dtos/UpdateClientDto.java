@@ -1,7 +1,8 @@
 package com.gp_dev.erp_lite.dtos;
 
+import com.gp_dev.erp_lite.validation.FrenchPhone;
+import com.gp_dev.erp_lite.validation.FrenchSiret;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +18,7 @@ public class UpdateClientDto {
     @Size(max = 255, message = "Company name must not exceed 255 characters")
     private String companyName;
 
-    @Size(min = 14, max = 14, message = "SIRET must be exactly 14 digits")
-    @Pattern(regexp = "^[0-9]{14}$", message = "SIRET must contain only digits")
+    @FrenchSiret
     private String siret;
 
     @Size(max = 255, message = "Contact first name must not exceed 255 characters")
@@ -31,8 +31,7 @@ public class UpdateClientDto {
     @Size(max = 255, message = "Email must not exceed 255 characters")
     private String email;
 
-    @Pattern(regexp = "^[+]?[(]?[0-9]{1,4}[)]?[-\\s.]?[(]?[0-9]{1,4}[)]?[-\\s.]?[0-9]{1,9}$", 
-             message = "Phone must be a valid phone number")
+    @FrenchPhone
     @Size(max = 50, message = "Phone must not exceed 50 characters")
     private String phone;
 

@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,24 +39,11 @@ class ClientServiceTest {
     private ClientServiceImpl clientService;
 
     private Client client;
-    private ClientDto clientDto;
     private CreateClientDto createClientDto;
 
     @BeforeEach
     void setUp() {
         client = Client.builder()
-                .id(1L)
-                .companyName("Test Company")
-                .contactFirstName("John")
-                .contactLastName("Doe")
-                .email("john.doe@test.com")
-                .phone("0123456789")
-                .address("123 Test Street")
-                .city("Paris")
-                .postalCode("75001")
-                .build();
-
-        clientDto = ClientDto.builder()
                 .id(1L)
                 .companyName("Test Company")
                 .contactFirstName("John")
