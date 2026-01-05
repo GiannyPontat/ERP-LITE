@@ -14,5 +14,5 @@ public class TopClientDto {
     private Long clientId;
     private String clientName;
     private BigDecimal totalRevenue;
-    private Integer invoiceCount;
+    private Long invoiceCount;
 }
